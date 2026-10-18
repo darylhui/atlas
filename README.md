@@ -2,6 +2,8 @@
 
 Atlas is a dark-themed, mobile-first web app for personal trainers. It tracks client training, recovery and nutrition, and it includes engagement tools that keep clients coming back. It is built for iPhone and iPad. Install it to the Home Screen and it runs full screen, works offline, and keeps all data on the device.
 
+**Live demo:** [darylhui.github.io/atlas](https://darylhui.github.io/atlas/) (choose *Explore with demo clients*).
+
 ![Screens](docs/screens.png)
 
 ## What's inside

@@ -1,7 +1,8 @@
 /* ==========================================================================
-   Atlas — Material 3 dark theme, mobile-first
-   Color roles generated with material-color-utilities from the brand seed
-   #C6F432 (Vibrant primary, Tonal Spot neutrals).
+   Atlas — Material dark theme, mobile-first
+   Baseline Material dark palette: primary #BB86FC, primary variant #3700B3,
+   secondary #03DAC6, surface #121212, error #CF6679. Surface levels use
+   Material's white elevation overlays (1dp 5% … 24dp 16%).
    ========================================================================== */
 
 @import '@fontsource-variable/roboto-flex';
@@ -9,38 +10,40 @@
 :root {
   color-scheme: dark;
 
-  /* ---- M3 color roles ---- */
-  --md-primary: #aad600;
-  --md-on-primary: #283500;
-  --md-primary-container: #3b4d00;
-  --md-on-primary-container: #c2f400;
-  --md-secondary: #c3caa9;
-  --md-on-secondary: #2d331c;
-  --md-secondary-container: #434930;
-  --md-on-secondary-container: #dfe6c4;
-  --md-tertiary: #a1d0c6;
-  --md-on-tertiary: #033731;
-  --md-tertiary-container: #204e47;
-  --md-on-tertiary-container: #bcece2;
-  --md-error: #ffb4ab;
-  --md-on-error: #690005;
-  --md-error-container: #93000a;
-  --md-on-error-container: #ffdad6;
+  /* ---- Color roles ---- */
+  --md-primary: #bb86fc;
+  --md-on-primary: #000000;
+  --md-primary-variant: #3700b3;
+  --md-primary-container: #3700b3;
+  --md-on-primary-container: #ffffff;
+  --md-secondary: #03dac6;
+  --md-on-secondary: #000000;
+  /* Selected / tonal states: primary at 20% over the surface */
+  --md-secondary-container: #342941;
+  --md-on-secondary-container: #e8d6fe;
+  --md-tertiary: #03dac6;
+  --md-on-tertiary: #000000;
+  --md-tertiary-container: #10322f;
+  --md-on-tertiary-container: #6ff5e8;
+  --md-error: #cf6679;
+  --md-on-error: #000000;
+  --md-error-container: #41272c;
+  --md-on-error-container: #f4b9c3;
 
-  --md-surface: #12140d;
-  --md-surface-lowest: #0d0f08;
-  --md-surface-low: #1b1c15;
-  --md-surface-container: #1f2019;
-  --md-surface-high: #292b23;
-  --md-surface-highest: #34362d;
-  --md-surface-bright: #393a32;
-  --md-on-surface: #e3e3d7;
-  --md-on-surface-variant: #c6c8b8;
-  --md-outline: #909284;
-  --md-outline-variant: #46483c;
-  --md-inverse-surface: #e3e3d7;
-  --md-inverse-on-surface: #303129;
-  --md-inverse-primary: #506600;
+  --md-surface: #121212; /* 0dp */
+  --md-surface-lowest: #0d0d0d;
+  --md-surface-low: #1e1e1e; /* 1dp */
+  --md-surface-container: #232323; /* 2–3dp */
+  --md-surface-high: #2c2c2c; /* 6dp */
+  --md-surface-highest: #383838; /* 24dp */
+  --md-surface-bright: #3a3a3a;
+  --md-on-surface: #e1e1e1; /* white, high emphasis (87%) */
+  --md-on-surface-variant: #a0a0a0; /* white, medium emphasis (60%) */
+  --md-outline: #8a8a8a;
+  --md-outline-variant: #3d3d3d;
+  --md-inverse-surface: #e1e1e1;
+  --md-inverse-on-surface: #121212;
+  --md-inverse-primary: #6200ee;
 
   /* ---- App aliases (used by components and inline styles) ---- */
   --bg: var(--md-surface);
@@ -55,23 +58,23 @@
   --text-3: var(--md-outline);
 
   --accent: var(--md-primary);
-  --accent-press: #b9e43a;
+  --accent-press: #c9a0fd;
   --accent-ink: var(--md-on-primary);
-  --accent-soft: rgba(170, 214, 0, 0.12);
+  --accent-soft: rgba(187, 134, 252, 0.12);
 
   /* Status — always paired with an icon or label */
   --good: #4cbb5a;
   --warning: #f2b530;
   --serious: #ec8a62;
-  --critical: #e5554f;
+  --critical: #cf6679;
   --low: #5c9cec;
 
   /* Chart series (validated against --surface-1) */
-  --series-1: #5c9cec;
-  --series-2: #e0703f;
-  --series-3: #2fae82;
-  --series-4: #d29a1a;
-  --grid: #2c2e26;
+  --series-1: #bb86fc;
+  --series-2: #03dac6;
+  --series-3: #f0a35e;
+  --series-4: #5c9cec;
+  --grid: #2e2e2e;
   --axis: var(--md-outline-variant);
 
   /* ---- Shape ---- */
@@ -317,7 +320,7 @@ a.list-item:active::before {
 
 @media (hover: hover) {
   .tab:hover svg {
-    background: rgba(198, 200, 184, 0.08);
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -340,8 +343,8 @@ a.list-item:active::before {
   border-radius: var(--shape-lg);
   display: grid;
   place-items: center;
-  background: var(--md-primary-container);
-  color: var(--md-on-primary-container);
+  background: var(--md-secondary);
+  color: var(--md-on-secondary);
   box-shadow: var(--elev-3);
   transition: box-shadow var(--dur-short) var(--ease-standard);
 }
@@ -430,7 +433,7 @@ a.list-item:active::before {
     font-weight: 700;
   }
   .rail .tab:not(.active):hover {
-    background: rgba(198, 200, 184, 0.08);
+    background: rgba(255, 255, 255, 0.08);
   }
   .rail-brand {
     justify-content: start;
@@ -948,7 +951,7 @@ a.list-item::before {
 }
 
 .select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5' fill='none'%3E%3Cpath fill='%23c6c8b8' d='M0 0h10L5 5z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5' fill='none'%3E%3Cpath fill='%23a0a0a0' d='M0 0h10L5 5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 18px center;
   padding-right: 44px;
@@ -1162,7 +1165,7 @@ input[type='time'].input {
 }
 
 .toggle.on {
-  background: var(--md-primary);
+  background: var(--md-secondary);
   box-shadow: none;
 }
 
@@ -1171,7 +1174,7 @@ input[type='time'].input {
   left: 4px;
   width: 24px;
   height: 24px;
-  background: var(--md-on-primary);
+  background: var(--md-on-secondary);
   transform: translateX(20px);
 }
 
@@ -1183,7 +1186,7 @@ input[type='time'].input {
   place-items: center;
   border-radius: 50%;
   font-weight: 600;
-  color: #12140d;
+  color: #121212;
   letter-spacing: 0;
 }
 
@@ -1700,7 +1703,7 @@ input[type='time'].input {
 }
 
 .set-row.done {
-  background: rgba(170, 214, 0, 0.08);
+  background: rgba(3, 218, 198, 0.08);
 }
 
 .set-num {
@@ -1775,8 +1778,8 @@ input[type='time'].input {
 }
 
 .set-check.on {
-  background: var(--md-primary);
-  color: var(--md-on-primary);
+  background: var(--md-secondary);
+  color: var(--md-on-secondary);
 }
 
 .pr-flag {
@@ -1937,7 +1940,7 @@ input[type='time'].input {
   font-weight: 500;
   padding: 2px 8px;
   border-radius: var(--shape-xs);
-  background: rgba(18, 20, 13, 0.72);
+  background: rgba(18, 18, 18, 0.72);
 }
 
 .compare {
@@ -1976,7 +1979,7 @@ input[type='time'].input {
   height: 40px;
   border-radius: 50%;
   background: var(--md-primary)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%23283500' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m8 6-5 5 5 5M14 6l5 5-5 5'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%23000000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m8 6-5 5 5 5M14 6l5 5-5 5'/%3E%3C/svg%3E")
     center / 22px no-repeat;
   box-shadow: var(--elev-2);
 }
@@ -2195,7 +2198,7 @@ input[type='time'].input {
   display: inline-grid;
   place-items: center;
   border-radius: 11px;
-  color: #0b0c0e;
+  color: #000000;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -2231,7 +2234,6 @@ input[type='time'].input {
 
 .seg-card {
   background: var(--surface-1);
-  border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
 }
@@ -2312,7 +2314,6 @@ input[type='time'].input {
   padding: 6px;
   border-radius: 13px;
   background: var(--surface-2);
-  border: 1px solid var(--border);
 }
 
 .time-field button {
@@ -2349,16 +2350,16 @@ input[type='time'].input {
   --phase: var(--accent);
 }
 .ct[data-phase='rest'] {
-  --phase: var(--series-1);
+  --phase: var(--series-2);
 }
 .ct[data-phase='change'] {
-  --phase: var(--series-2);
+  --phase: var(--series-3);
 }
 .ct[data-phase='break'] {
   --phase: var(--series-4);
 }
 .ct[data-phase='coach'] {
-  --phase: var(--series-3);
+  --phase: var(--good);
 }
 
 .ct-head {
@@ -2447,8 +2448,7 @@ input[type='time'].input {
   max-height: 100%;
   overflow-y: auto;
   border-radius: 20px;
-  background: rgba(21, 23, 26, 0.72);
-  border: 1px solid var(--border);
+  background: rgba(30, 30, 30, 0.8);
 }
 
 .ct-board-row {
@@ -2533,18 +2533,17 @@ input[type='time'].input {
 .ct-btn {
   width: 60px;
   height: 60px;
-  border-radius: 20px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--surface-2);
-  border: 1px solid var(--border-strong);
   color: var(--text);
 }
 
 .ct-btn.big {
   width: 84px;
   height: 84px;
-  border-radius: 28px;
+  border-radius: 50%;
   background: var(--accent);
   color: var(--accent-ink);
   border: 0;

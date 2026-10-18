@@ -133,7 +133,7 @@ export default function ClassSession() {
               const client = a.clientId ? data.clients.find((c) => c.id === a.clientId) : undefined;
               return (
                 <div key={a.id} className="list-item">
-                  {client ? <Avatar name={client.name} color={client.color} size={34} /> : <Avatar name={a.name} color="#9a9ca1" size={34} />}
+                  {client ? <Avatar name={client.name} color={client.color} size={34} /> : <Avatar name={a.name} color="#a0a0a0" size={34} />}
                   <button className="grow" style={{ textAlign: 'left' }} onClick={() => client && nav(`/clients/${client.id}`)}>
                     <div className="bold truncate">{a.name}</div>
                     <div className="xs faint">{client ? 'PT client' : 'Member'}</div>

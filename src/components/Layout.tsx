@@ -5,14 +5,12 @@ import { useData } from '../lib/store';
 import { firstName } from '../lib/util';
 import { QuickActions } from './sheets';
 
+/** Atlas mark: a circle (the world) held up by a square. */
 export function Logo({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden>
-      <rect width="32" height="32" rx="9" fill="var(--accent)" />
-      <path d="M9.5 24 16 8l6.5 16" fill="none" stroke="var(--accent-ink)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6 18.5h20" stroke="var(--accent-ink)" strokeWidth="2.6" strokeLinecap="round" />
-      <rect x="5" y="15.5" width="2.6" height="6" rx="1" fill="var(--accent-ink)" />
-      <rect x="24.4" y="15.5" width="2.6" height="6" rx="1" fill="var(--accent-ink)" />
+      <rect x="9" y="15" width="14" height="14" fill="var(--md-secondary)" />
+      <circle cx="16" cy="9" r="6" fill="var(--md-primary)" />
     </svg>
   );
 }

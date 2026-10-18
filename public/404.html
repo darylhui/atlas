@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Atlas</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      html, body { background: #121212; color: #e1e1e1; }
+    </style>
+    <script>
+      // GitHub Pages serves this for any unknown path. Atlas uses hash routes,
+      // so turn /atlas/clients/abc into /atlas/#/clients/abc instead of a 404.
+      (function () {
+        var l = window.location;
+        var parts = l.pathname.split('/').filter(Boolean);
+        // Project sites live under /<repo>/; user/custom-domain sites live at /.
+        var base = /\.github\.io$/.test(l.hostname) && parts.length ? '/' + parts.shift() + '/' : '/';
+        var route = parts.join('/');
+        l.replace(base + l.search + (route ? '#/' + route : ''));
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

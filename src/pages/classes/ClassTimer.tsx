@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ListOrdered, Pause, Play, SkipBack, SkipForward, Volume2, VolumeX, X } from 'lucide-react';
+import { CircleCheck, ListOrdered, Pause, Play, SkipBack, SkipForward, StickyNote, Volume2, VolumeX, X } from 'lucide-react';
 import { actions, useStore } from '../../lib/store';
 import { FORMATS, buildTimeline, type Interval } from '../../lib/classes';
 import { fmtDuration } from '../../lib/util';
@@ -239,7 +239,7 @@ export default function ClassTimer() {
           ) : done ? (
             <>
               <span className="ct-phase">Done</span>
-              <div className="ct-time">🎉</div>
+              <div className="ct-time" style={{ color: 'var(--md-secondary)' }}><CircleCheck size="0.8em" strokeWidth={1.5} aria-hidden /></div>
               <div className="ct-move">Class complete</div>
               <div className="row mt-3" style={{ gap: 10 }}>
                 <Button variant="primary" onClick={finish}>
@@ -288,7 +288,7 @@ export default function ClassTimer() {
             ))}
             {boardSeg.notes && (
               <div className="ct-board-row">
-                <span className="idx">📝</span>
+                <span className="idx"><StickyNote size={20} aria-hidden /></span>
                 <div className="sub">{boardSeg.notes}</div>
               </div>
             )}

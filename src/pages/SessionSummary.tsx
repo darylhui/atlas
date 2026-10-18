@@ -91,7 +91,7 @@ export default function SessionSummary() {
       </div>
 
       {prs.length > 0 && (
-        <Card style={{ background: 'linear-gradient(135deg, rgba(170,214,0,0.14), rgba(170,214,0,0.03))', borderColor: 'rgba(170,214,0,0.3)' }}>
+        <Card style={{ background: 'linear-gradient(135deg, rgba(187,134,252,0.16), rgba(187,134,252,0.03))', borderColor: 'rgba(187,134,252,0.3)' }}>
           <div className="row" style={{ gap: 8 }}>
             <Trophy size={20} color="var(--accent)" />
             <span className="bold">{prs.length} personal record{prs.length > 1 ? 's' : ''}</span>

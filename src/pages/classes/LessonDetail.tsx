@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CalendarPlus, ClipboardList, Copy, Pencil, Play, Share2, Trash2 } from 'lucide-react';
+import { CalendarPlus, ClipboardList, Copy, Pencil, Play, Share2, StickyNote, Trash2 } from 'lucide-react';
 import { actions, useStore } from '../../lib/store';
 import type { ClassLesson } from '../../lib/types';
 import { FORMATS, buildTimeline, cloneLesson, lessonSeconds, lessonText, presentCount, segmentSeconds, segmentSummary } from '../../lib/classes';
@@ -92,8 +92,8 @@ export function LessonSheet({ lesson }: { lesson: ClassLesson }) {
             </div>
           ))}
           {s.notes && (
-            <div className="small" style={{ padding: '10px 16px', borderTop: '1px solid var(--border)', color: 'var(--warning)' }}>
-              📝 {s.notes}
+            <div className="small row" style={{ gap: 6, padding: '10px 16px', borderTop: '1px solid var(--border)', color: 'var(--warning)' }}>
+              <StickyNote size={14} style={{ flex: 'none' }} aria-hidden /> {s.notes}
             </div>
           )}
           {s.breakSec > 0 && i < lesson.segments.length - 1 && <div className="xs faint" style={{ padding: '8px 16px', borderTop: '1px solid var(--border)' }}>Then {fmtDuration(s.breakSec)} to set up the next block</div>}

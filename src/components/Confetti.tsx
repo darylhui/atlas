@@ -10,7 +10,7 @@ export function celebrate() {
   useConfetti.setState((s) => ({ n: s.n + 1 }));
 }
 
-const COLORS = ['#aad600', '#c2f400', '#5c9cec', '#e0703f', '#2fae82', '#a1d0c6', '#f2b530'];
+const COLORS = ['#bb86fc', '#3700b3', '#03dac6', '#cf6679', '#f0a35e', '#5c9cec', '#ffffff'];
 
 export function ConfettiHost() {
   const n = useConfetti((s) => s.n);

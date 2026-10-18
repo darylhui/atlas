@@ -89,44 +89,36 @@ function drawCard(s: CardStats, accent: string): HTMLCanvasElement {
   const font = (w: number, size: number) => `${w} ${size}px "Roboto Flex Variable", Roboto, system-ui, sans-serif`;
 
   const g = ctx.createLinearGradient(0, 0, W, H);
-  g.addColorStop(0, '#1f2019');
-  g.addColorStop(1, '#12140d');
+  g.addColorStop(0, '#1e1e1e');
+  g.addColorStop(1, '#121212');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
   const glow = ctx.createRadialGradient(W * 0.85, 120, 10, W * 0.85, 120, 520);
-  glow.addColorStop(0, 'rgba(170,214,0,0.18)');
-  glow.addColorStop(1, 'rgba(170,214,0,0)');
+  glow.addColorStop(0, 'rgba(187,134,252,0.18)');
+  glow.addColorStop(1, 'rgba(187,134,252,0)');
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
 
   const P = 84;
+  // Atlas mark (32-unit grid scaled to 72px): circle on a square.
+  const u = 72 / 32;
+  ctx.fillStyle = '#03dac6';
+  ctx.fillRect(P + 9 * u, P + 15 * u, 14 * u, 14 * u);
   ctx.fillStyle = accent;
-  roundRect(ctx, P, P, 72, 72, 22);
+  ctx.beginPath();
+  ctx.arc(P + 16 * u, P + 9 * u, 6 * u, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = '#283500';
-  ctx.lineWidth = 7;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.beginPath();
-  ctx.moveTo(P + 21, P + 54);
-  ctx.lineTo(P + 36, P + 18);
-  ctx.lineTo(P + 51, P + 54);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(P + 13, P + 42);
-  ctx.lineTo(P + 59, P + 42);
-  ctx.stroke();
 
-  ctx.fillStyle = '#c6c8b8';
+  ctx.fillStyle = '#a0a0a0';
   ctx.font = font(600, 30);
   ctx.fillText(s.business.toUpperCase(), P + 96, P + 48);
 
-  ctx.fillStyle = '#e3e3d7';
+  ctx.fillStyle = '#e1e1e1';
   ctx.font = font(700, 96);
   ctx.fillText(`${s.name}’s`, P, 330);
   ctx.fillStyle = accent;
   ctx.fillText('progress', P, 430);
-  ctx.fillStyle = '#909284';
+  ctx.fillStyle = '#8a8a8a';
   ctx.font = font(500, 34);
   ctx.fillText(s.period, P, 490);
 
@@ -141,26 +133,26 @@ function drawCard(s: CardStats, accent: string): HTMLCanvasElement {
   tiles.forEach(([v, l], i) => {
     const x = P + (i % 2) * (tw + 30);
     const y = 560 + Math.floor(i / 2) * (th + 30);
-    ctx.fillStyle = '#292b23';
+    ctx.fillStyle = '#2c2c2c';
     roundRect(ctx, x, y, tw, th, 34);
     ctx.fill();
-    ctx.fillStyle = '#e3e3d7';
+    ctx.fillStyle = '#e1e1e1';
     ctx.font = font(500, 78);
     ctx.fillText(v, x + 40, y + 108);
-    ctx.fillStyle = '#c6c8b8';
+    ctx.fillStyle = '#a0a0a0';
     ctx.font = font(600, 32);
     ctx.fillText(l, x + 40, y + 156);
   });
 
   let y = 560 + 2 * (th + 30) + 40;
   if (s.topLift) {
-    ctx.fillStyle = '#3b4d00';
+    ctx.fillStyle = '#342941';
     roundRect(ctx, P, y, W - P * 2, 150, 34);
     ctx.fill();
     ctx.fillStyle = accent;
     ctx.font = font(700, 30);
     ctx.fillText('BIGGEST GAIN', P + 40, y + 52);
-    ctx.fillStyle = '#e3e3d7';
+    ctx.fillStyle = '#e1e1e1';
     ctx.font = font(750, 44);
     const txt = `${s.topLift.name}  ${s.topLift.from} → ${s.topLift.to}`;
     ctx.fillText(txt.length > 34 ? `${s.topLift.name}` : txt, P + 40, y + 108);
@@ -179,14 +171,14 @@ function drawCard(s: CardStats, accent: string): HTMLCanvasElement {
   for (const b of s.badges) {
     const bw = ctx.measureText(b).width + 48;
     if (bx + bw > W - P) break;
-    ctx.fillStyle = '#3b4d00';
+    ctx.fillStyle = '#3700b3';
     roundRect(ctx, bx, by, bw, 56, 16);
     ctx.fill();
-    ctx.fillStyle = '#c2f400';
+    ctx.fillStyle = '#ffffff';
     ctx.fillText(b, bx + 24, by + 38);
     bx += bw + 16;
   }
-  ctx.fillStyle = '#909284';
+  ctx.fillStyle = '#8a8a8a';
   ctx.font = font(500, 28);
   ctx.fillText('Keep showing up.', P, H - 44);
   return c;
@@ -201,13 +193,13 @@ export function ShareProgressSheet({ open, client, onClose }: { open: boolean; c
 
   useEffect(() => {
     if (!stats) return;
-    const canvas = drawCard(stats, '#aad600');
+    const canvas = drawCard(stats, '#bb86fc');
     setUrl(canvas.toDataURL('image/png'));
   }, [stats]);
 
   const share = async () => {
     if (!stats) return;
-    const canvas = drawCard(stats, '#aad600');
+    const canvas = drawCard(stats, '#bb86fc');
     const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'));
     if (!blob) return;
     const res = await shareImage(blob, `${stats.name.toLowerCase()}-progress.png`, `${stats.name}’s progress`);
