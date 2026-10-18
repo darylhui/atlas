@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Download, Eye, Lock, RotateCcw, Sparkles, TriangleAlert, Upload } from 'lucide-react';
+import { Download, Eye, Lock, MapPin, RotateCcw, Sparkles, TriangleAlert, Upload } from 'lucide-react';
+import { StudiosSheet } from '../components/classes';
 import { actions, emptyData, useStore } from '../lib/store';
 import type { AppData, Units } from '../lib/types';
 import { loadPhoto, savePhoto } from '../lib/db';
@@ -18,6 +19,7 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [pin, setPin] = useState(s.clientModePin ?? '');
   const [withPhotos, setWithPhotos] = useState(true);
+  const [studios, setStudios] = useState(false);
 
   const exportBackup = async () => {
     const photos: Record<string, string> = {};
@@ -93,6 +95,18 @@ export default function SettingsPage() {
         </div>
       </Section>
 
+      <Section title="Studios">
+        <div className="card flush">
+          <ListItem
+            icon={<MapPin size={18} />}
+            title="Studios you coach at"
+            subtitle={data.studios.length ? data.studios.map((x) => x.name).join(' · ') : 'Add studios for class capacity and pay rates'}
+            onClick={() => setStudios(true)}
+          />
+        </div>
+        {studios && <StudiosSheet onClose={() => setStudios(false)} />}
+      </Section>
+
       <Section title="Client view lock">
         <Card>
           <p className="small muted">Set a 4-digit PIN to stop clients leaving the client view and seeing other clients’ data. Leave blank for no lock.</p>
@@ -138,7 +152,7 @@ export default function SettingsPage() {
               </div>
               <Toggle on={withPhotos} onChange={setWithPhotos} label="Include photos in backup" />
             </div>
-            <ListItem icon={<Download size={18} />} title="Export backup" subtitle={`${data.clients.length} clients · ${data.sessions.length} sessions · ${data.checkIns.length} check-ins`} onClick={exportBackup} />
+            <ListItem icon={<Download size={18} />} title="Export backup" subtitle={`${data.clients.length} clients · ${data.sessions.length} sessions · ${data.lessons.length} class lessons`} onClick={exportBackup} />
             <ListItem icon={<Upload size={18} />} title="Restore from backup" subtitle="Replace this device’s data with a backup file" onClick={() => fileRef.current?.click()} />
           </div>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={(e) => importBackup(e.target.files?.[0])} />

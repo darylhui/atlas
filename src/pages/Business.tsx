@@ -6,6 +6,8 @@ import { revenueBetween } from '../lib/analytics/insights';
 import { completed } from '../lib/analytics/strength';
 import { fmtDay, money, parseDay, today } from '../lib/util';
 import { BarChart, ChartCard } from '../components/charts';
+import { classPay, presentCount } from '../lib/classes';
+import { dayKey, mean } from '../lib/util';
 import { Avatar, Empty, ListItem, Page, Section, Stat, ZonePill } from '../components/ui';
 
 function monthKey(offset: number) {
@@ -53,6 +55,13 @@ export default function Business() {
     .sort((a, b) => (a.left ?? 0) - (b.left ?? 0));
 
   const clientName = new Map(data.clients.map((c) => [c.id, c]));
+  const monthFrom = `${t.slice(0, 7)}-01`;
+  const taughtThisMonth = data.groupClasses.filter((g) => g.status === 'completed' && dayKey(new Date(g.start)) >= monthFrom);
+  const studioRows = data.studios.map((st) => {
+    const list = taughtThisMonth.filter((g) => g.studioId === st.id);
+    return { st, count: list.length, pay: list.length * (st.payPerClass ?? 0), avg: list.length ? Math.round(mean(list.map(presentCount))) : 0 };
+  });
+  const payThisMonth = classPay(data.groupClasses, data.studios, monthFrom, t);
 
   return (
     <Page title="Business" back="/more" compact>
@@ -71,6 +80,45 @@ export default function Business() {
           <BarChart ariaLabel="Sessions by month" data={months.map((m) => ({ key: m.m, label: m.label, value: m.sessions, tip: m.m }))} />
         </ChartCard>
       </div>
+
+      {(data.studios.length > 0 || taughtThisMonth.length > 0) && (
+        <Section title="Group classes this month">
+          <div className="stack">
+            <div className="grid-3">
+              <Stat label="Classes taught" value={taughtThisMonth.length} />
+              <Stat label="Class pay" value={money(payThisMonth, cur)} />
+              <Stat label="Members coached" value={taughtThisMonth.reduce((a, g) => a + presentCount(g), 0)} />
+            </div>
+            {studioRows.length > 0 && (
+              <div className="card" style={{ overflowX: 'auto' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Studio</th>
+                      <th>Classes</th>
+                      <th>Avg size</th>
+                      <th>Pay</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {studioRows.map((r) => (
+                      <tr key={r.st.id}>
+                        <td>{r.st.name}</td>
+                        <td>{r.count}</td>
+                        <td>{r.avg || '–'}</td>
+                        <td>
+                          <b>{money(r.pay, cur)}</b>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="xs faint mt-2">Pay uses each studio’s per-class rate (Classes → Studios).</div>
+              </div>
+            )}
+          </div>
+        </Section>
+      )}
 
       <div className="cols">
         <Section title="Renewals due">

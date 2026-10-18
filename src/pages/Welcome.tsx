@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, Dumbbell, Salad, Sparkles, Users } from 'lucide-react';
+import { Activity, Dumbbell, Salad, Sparkles, Timer, Users } from 'lucide-react';
 import { Logo } from '../components/Layout';
 import { Button, Field, Segmented, Select, TextInput, toast } from '../components/ui';
 import { CURRENCIES } from './Settings';
@@ -11,6 +11,7 @@ const FEATURES = [
   { icon: Dumbbell, title: 'Live workout logging', text: 'Previous numbers, PR detection, rest timer.' },
   { icon: Activity, title: 'Recovery analytics', text: 'Readiness score, HRV, workload ratio.' },
   { icon: Salad, title: 'Nutrition coaching', text: 'Macro targets, food log, adherence.' },
+  { icon: Timer, title: 'Group classes', text: 'Lesson programmes, class timer, attendance.' },
   { icon: Users, title: 'Client engagement', text: 'Goals, habits, badges, shareable progress.' },
 ];
 

@@ -106,12 +106,19 @@ export function sessionLoad(s: WorkoutSession): number {
   return Math.round(rpe * dur);
 }
 
-export function dailyLoads(sessions: WorkoutSession[], clientId: ID, from: DayKey, to: DayKey): Map<DayKey, number> {
+/** Load from training outside logged PT sessions, e.g. group classes. */
+export type ExtraLoad = { date: DayKey; load: number };
+
+export function dailyLoads(sessions: WorkoutSession[], clientId: ID, from: DayKey, to: DayKey, extra: ExtraLoad[] = []): Map<DayKey, number> {
   const map = new Map<DayKey, number>();
   for (const d of dayRange(from, to)) map.set(d, 0);
   for (const s of completed(sessions, clientId)) {
     if (s.date < from || s.date > to) continue;
     map.set(s.date, (map.get(s.date) ?? 0) + sessionLoad(s));
+  }
+  for (const x of extra) {
+    if (x.date < from || x.date > to) continue;
+    map.set(x.date, (map.get(x.date) ?? 0) + x.load);
   }
   return map;
 }
@@ -134,8 +141,8 @@ export function acwrZone(ratio: number): NonNullable<LoadStatus['zone']> {
 
 /** Acute:chronic workload ratio (7-day acute vs 28-day weekly average),
  *  plus Foster's monotony and strain over the last 7 days. */
-export function loadStatus(sessions: WorkoutSession[], clientId: ID, date: DayKey = today()): LoadStatus {
-  const loads = dailyLoads(sessions, clientId, addDays(date, -27), date);
+export function loadStatus(sessions: WorkoutSession[], clientId: ID, date: DayKey = today(), extra: ExtraLoad[] = []): LoadStatus {
+  const loads = dailyLoads(sessions, clientId, addDays(date, -27), date, extra);
   const days = [...loads.entries()];
   const last7 = days.slice(-7).map(([, v]) => v);
   const acute = last7.reduce((a, b) => a + b, 0);
@@ -154,9 +161,9 @@ export interface LoadPoint {
   ratio?: number;
 }
 
-export function loadSeries(sessions: WorkoutSession[], clientId: ID, days: number, end: DayKey = today()): LoadPoint[] {
+export function loadSeries(sessions: WorkoutSession[], clientId: ID, days: number, end: DayKey = today(), extra: ExtraLoad[] = []): LoadPoint[] {
   const start = addDays(end, -(days - 1));
-  const loads = dailyLoads(sessions, clientId, addDays(start, -27), end);
+  const loads = dailyLoads(sessions, clientId, addDays(start, -27), end, extra);
   const keys = [...loads.keys()];
   const vals = keys.map((k) => loads.get(k)!);
   const out: LoadPoint[] = [];

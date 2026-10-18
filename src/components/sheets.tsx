@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, CalendarPlus, Check, ClipboardList, Dumbbell, Plus, Repeat, Salad, UserPlus } from 'lucide-react';
+import { Activity, CalendarPlus, Check, ClipboardList, Dumbbell, Plus, Repeat, Salad, Timer, UserPlus, Users } from 'lucide-react';
+import { LessonPicker } from './classes';
 import { actions, useData } from '../lib/store';
 import type { Client, Exercise, ExerciseCategory, ID, MuscleGroup } from '../lib/types';
 import { CATEGORY_LABEL, EQUIPMENT_LABEL, MUSCLE_LABEL } from '../lib/seed/exercises';
@@ -103,7 +104,7 @@ export function StartWorkoutSheet({ clientId, open, onClose }: { clientId?: ID; 
 
 export function QuickActions({ open, onClose }: { open: boolean; onClose: () => void }) {
   const nav = useNavigate();
-  const [mode, setMode] = useState<null | 'workout' | 'checkin' | 'food'>(null);
+  const [mode, setMode] = useState<null | 'workout' | 'checkin' | 'food' | 'teach'>(null);
   const close = () => {
     setMode(null);
     onClose();
@@ -112,7 +113,9 @@ export function QuickActions({ open, onClose }: { open: boolean; onClose: () => 
     { icon: Dumbbell, label: 'Start workout', sub: 'Log sets live with rest timer', on: () => setMode('workout') },
     { icon: Activity, label: 'Readiness check-in', sub: 'Sleep, stress, soreness, HRV', on: () => setMode('checkin') },
     { icon: Salad, label: 'Log nutrition', sub: 'Meals, macros and water', on: () => setMode('food') },
-    { icon: CalendarPlus, label: 'Book a session', sub: 'Add to your schedule', on: () => { close(); nav('/schedule?new=1'); } },
+    { icon: Timer, label: 'Teach a class', sub: 'Run a lesson programme on the class timer', on: () => setMode('teach') },
+    { icon: Users, label: 'Schedule a group class', sub: 'Studio timetable & attendance', on: () => { close(); nav('/classes?new=1'); } },
+    { icon: CalendarPlus, label: 'Book a PT session', sub: 'Add to your schedule', on: () => { close(); nav('/schedule?new=1'); } },
     { icon: UserPlus, label: 'New client', sub: 'Profile, goals & health screen', on: () => { close(); nav('/clients/new'); } },
   ];
   return (
@@ -142,6 +145,15 @@ export function QuickActions({ open, onClose }: { open: boolean; onClose: () => 
         onPick={(c) => {
           close();
           nav(`/clients/${c.id}/check-in`);
+        }}
+      />
+      <LessonPicker
+        open={open && mode === 'teach'}
+        onClose={close}
+        title="Teach which lesson?"
+        onPick={(l) => {
+          close();
+          nav(`/classes/timer/${l.id}`);
         }}
       />
       <ClientPicker

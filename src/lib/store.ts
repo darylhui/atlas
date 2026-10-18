@@ -3,6 +3,7 @@ import { loadData, requestPersistence, saveData, storageAvailable } from './db';
 import { EXERCISES } from './seed/exercises';
 import { FOODS } from './seed/foods';
 import { STARTER_TEMPLATES } from './seed/templates';
+import { EXAMPLE_LESSONS } from './seed/lessons';
 import { lastPerformance } from './analytics/strength';
 import type { AppData, Habit, ID, Package, Settings, WorkoutExercise, WorkoutSession, WorkoutSet } from './types';
 import { dayKey, today, uid } from './util';
@@ -53,6 +54,9 @@ export function emptyData(): AppData {
     appointments: [],
     packages: [],
     notes: [],
+    studios: [],
+    lessons: [...EXAMPLE_LESSONS],
+    groupClasses: [],
     settings: { ...DEFAULT_SETTINGS, ...(typeof navigator !== 'undefined' ? localeDefaults() : {}) },
   };
 }
@@ -163,6 +167,10 @@ export const useStore = create<State>((set, get) => ({
           appointments: not(data.appointments),
           packages: not(data.packages),
           notes: not(data.notes),
+          groupClasses: data.groupClasses.map((g) => ({
+            ...g,
+            attendees: g.attendees.map((a) => (a.clientId === id ? { ...a, clientId: undefined } : a)),
+          })),
         },
       };
     });

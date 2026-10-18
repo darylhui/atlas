@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Banknote, Calculator, ClipboardList, MonitorSmartphone, Settings, Share, Smartphone } from 'lucide-react';
+import { Banknote, Calculator, CalendarDays, ClipboardList, MonitorSmartphone, Settings, Share, Smartphone, Timer } from 'lucide-react';
 import { useSettings } from '../lib/store';
 import { Logo } from '../components/Layout';
 import { ClientPicker } from '../components/sheets';
@@ -33,7 +33,9 @@ export default function More() {
         </div>
       </Card>
       <div className="card flush">
-        <ListItem icon={icon(ClipboardList)} title="Library" subtitle="Workout templates & exercises" onClick={() => nav('/library')} />
+        <ListItem icon={icon(CalendarDays)} title="Schedule" subtitle="PT sessions and group classes by week" onClick={() => nav('/schedule')} />
+        <ListItem icon={icon(Timer)} title="Classes" subtitle="Studio timetable, lesson programmes, class timer" onClick={() => nav('/classes')} />
+        <ListItem icon={icon(ClipboardList)} title="Library" subtitle="PT templates, class lessons & exercises" onClick={() => nav('/library')} />
         <ListItem icon={icon(MonitorSmartphone)} title="Client view" subtitle="Hand your device to a client" onClick={() => setPick(true)} />
         <ListItem icon={icon(Calculator)} title="Coach tools" subtitle="1RM, plates, interval timer, RPE chart" onClick={() => nav('/tools')} />
         <ListItem icon={icon(Banknote)} title="Business" subtitle="Revenue, renewals, attendance" onClick={() => nav('/business')} />

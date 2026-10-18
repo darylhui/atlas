@@ -288,6 +288,94 @@ export interface Note {
   pinned?: boolean;
 }
 
+// ---------- Group classes (studio lesson programmes) ----------
+
+export type SegmentFormat = 'coach' | 'stations' | 'circuit' | 'intervals' | 'emom' | 'amrap' | 'tabata' | 'for_time' | 'partner';
+
+export interface ClassMove {
+  id: ID;
+  name: string;
+  exerciseId?: ID;
+  /** Reps, time or distance, e.g. "10 reps", "40s", "250m". */
+  target?: string;
+  /** Load guidance, e.g. "RPE 8", "70% 1RM", "Heavy DBs". */
+  load?: string;
+  /** Regressions / progressions to cue. */
+  options?: string;
+}
+
+export interface ClassSegment {
+  id: ID;
+  name: string;
+  format: SegmentFormat;
+  workSec: number;
+  restSec: number;
+  /** Laps, rounds or minutes depending on the format. */
+  rounds: number;
+  /** Sets at each station before rotating (stations format). */
+  sets: number;
+  /** Station change or between-round rest. */
+  transitionSec: number;
+  /** Total time for coach-led, AMRAP and for-time blocks. */
+  durationSec: number;
+  /** Water / set-up break after this block. */
+  breakSec: number;
+  /** Target heart-rate zone 1–5. */
+  zone?: number;
+  notes?: string;
+  moves: ClassMove[];
+}
+
+export interface ClassLesson {
+  id: ID;
+  title: string;
+  programType: string;
+  /** Programming block / cycle, e.g. "Block 12". */
+  block?: string;
+  week?: number;
+  session?: string;
+  targetMin: number;
+  focus?: string;
+  equipment?: string;
+  setup?: string;
+  coachNotes?: string;
+  example?: boolean;
+  segments: ClassSegment[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface Studio {
+  id: ID;
+  name: string;
+  address?: string;
+  payPerClass?: number;
+  capacity?: number;
+}
+
+export interface Attendee {
+  id: ID;
+  name: string;
+  clientId?: ID;
+  present: boolean;
+}
+
+export interface GroupClass {
+  id: ID;
+  lessonId?: ID;
+  programType: string;
+  title?: string;
+  studioId?: ID;
+  start: string;
+  durationMin: number;
+  capacity?: number;
+  attendees: Attendee[];
+  status: 'scheduled' | 'completed' | 'cancelled';
+  /** Typical session RPE for members; feeds linked clients' training load. */
+  rpe?: number;
+  notes?: string;
+}
+
 export type Units = 'metric' | 'imperial';
 
 export interface Settings {
@@ -319,5 +407,8 @@ export interface AppData {
   appointments: Appointment[];
   packages: Package[];
   notes: Note[];
+  studios: Studio[];
+  lessons: ClassLesson[];
+  groupClasses: GroupClass[];
   settings: Settings;
 }

@@ -8,6 +8,7 @@ import type {
   ActivityLevel,
   AppData,
   Appointment,
+  Attendee,
   CheckIn,
   Client,
   FoodEntry,
@@ -22,7 +23,7 @@ import type {
   WorkoutSession,
   WorkoutSet,
 } from '../types';
-import { addDays, age, clamp, dayKey, parseDay, today, toIso, uid } from '../util';
+import { addDays, age, clamp, dayKey, parseDay, today, toIso, uid, weekStart } from '../util';
 
 function rng(seed: number) {
   return () => {
@@ -571,5 +572,76 @@ export function buildDemoData(): AppData {
     notes[p.name].forEach((text, i) => data.notes.push({ id: uid(), clientId, date: new Date(Date.now() - (i + 1) * 5 * 86_400_000).toISOString(), text, pinned: i === 0 }));
   });
 
+  addGroupClasses(data, rand);
   return data;
+}
+
+const MEMBER_NAMES = [
+  'Chloe T.', 'Ravi K.', 'Hannah L.', 'Jordan P.', 'Aisha M.', 'Ben W.', 'Grace H.', 'Daniel O.', 'Mia S.', 'Kenji N.',
+  'Olivia R.', 'Samir A.', 'Lucy B.', 'Ethan C.', 'Zara F.', 'Noah G.', 'Ivy Q.', 'Lucas D.', 'Emma V.', 'Ryan J.',
+  'Sofia E.', 'Isaac Y.', 'Nina Z.', 'Leo M.', 'Ava K.', 'Marco T.', 'Elena P.', 'Tom H.', 'Priscilla W.', 'Jun L.',
+  'Fatima S.', 'Oscar B.', 'Ruby A.', 'Caleb N.', 'Maya R.', 'Felix C.', 'Hana O.', 'Liam G.', 'Tessa I.', 'Arjun V.',
+];
+
+/** Two studios with a weekly class timetable: 4 weeks of history plus the next 2 weeks. */
+function addGroupClasses(data: AppData, rand: () => number) {
+  const t0 = today();
+  const downtown = { id: 'studio-downtown', name: 'Downtown Studio', address: 'Level 2, 18 Market St', payPerClass: 45, capacity: 24 };
+  const eastside = { id: 'studio-eastside', name: 'Eastside Studio', address: '7 Harbour Rd', payPerClass: 40, capacity: 20 };
+  data.studios.push(downtown, eastside);
+  const lessonFor = (type: string) => data.lessons.find((l) => l.programType === type);
+  // [day of week (0 = Mon), time, program, studio]
+  const timetable: [number, string, string, typeof downtown][] = [
+    [0, '05:45', 'Strength', downtown],
+    [0, '09:30', 'Pump', downtown],
+    [1, '20:00', 'Cardio HIIT', eastside],
+    [2, '05:45', 'H.I.R.T', downtown],
+    [3, '20:00', 'Cardio Summit', eastside],
+    [4, '05:45', 'Power', downtown],
+    [5, '07:00', 'Cardio HIIT', downtown],
+    [5, '11:00', 'Balanced', eastside],
+  ];
+  const sarah = data.clients.find((c) => c.name === 'Sarah Tan');
+  const mei = data.clients.find((c) => c.name === 'Mei Lin Wong');
+  const regulars = MEMBER_NAMES.slice(0, 14);
+
+  const make = (day: string, time: string, type: string, studio: typeof downtown) => {
+    const start = toIso(day, time);
+    const past = day < t0;
+    const capacity = studio.capacity;
+    const booked = Math.min(capacity, Math.round(capacity * (0.55 + rand() * 0.45)));
+    const pool = [...regulars.filter(() => rand() < 0.6), ...MEMBER_NAMES.slice(14).filter(() => rand() < 0.3)];
+    const names = [...new Set(pool)].slice(0, booked);
+    const attendees: Attendee[] = names.map((name) => ({ id: uid(), name, present: past ? rand() < 0.9 : false }));
+    const daysAgo = Math.round((parseDay(t0).getTime() - parseDay(day).getTime()) / 86_400_000);
+    if (mei && type === 'Cardio HIIT' && daysAgo >= 0 && daysAgo <= 12) attendees.unshift({ id: uid(), name: mei.name, clientId: mei.id, present: past });
+    if (sarah && type === 'Strength' && rand() < 0.7) attendees.unshift({ id: uid(), name: sarah.name, clientId: sarah.id, present: past });
+    data.groupClasses.push({
+      id: uid(),
+      lessonId: lessonFor(type)?.id,
+      programType: type,
+      studioId: studio.id,
+      start,
+      durationMin: 50,
+      capacity,
+      attendees,
+      status: past ? 'completed' : 'scheduled',
+      rpe: type === 'Balanced' ? 4 : type.startsWith('Cardio') || type === 'H.I.R.T' ? 8 : 7,
+      notes: past && rand() < 0.25 ? pick(rand, ['Great energy, full room.', 'Block B ran long — trim transitions next time.', 'Two first-timers; spent extra time on demos.', 'Swapped box jumps for step-ups for a member with a knee niggle.']) : undefined,
+    });
+  };
+
+  for (let d = addDays(weekStart(t0), -28); d <= addDays(t0, 13); d = addDays(d, 1)) {
+    const dow = (parseDay(d).getDay() + 6) % 7;
+    for (const [day, time, type, studio] of timetable) if (day === dow) make(d, time, type, studio);
+  }
+  // Make sure today always has classes to teach in the demo.
+  if (!data.groupClasses.some((g) => dayKey(new Date(g.start)) === t0)) {
+    make(t0, '09:30', 'Strength', downtown);
+    make(t0, '20:00', 'Cardio HIIT', eastside);
+  }
+}
+
+function pick<T>(rand: () => number, xs: T[]): T {
+  return xs[Math.floor(rand() * xs.length)];
 }

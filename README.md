@@ -15,10 +15,13 @@ Atlas is a dark-themed, mobile-first web app for personal trainers. It tracks cl
 | **Nutrition** | Macro targets from Mifflin–St Jeor BMR × activity × goal. A food log with a ~75-item database, custom foods and quick add. Water tracker, copy previous day, and a 14-day adherence score. |
 | **Body** | Weight, body fat and girth tracking with goal lines. Progress photos stored on the device, with a before/after slider. |
 | **Engagement** | Goals that update automatically from logged data, weekly habits with streaks, 16 achievement badges, and a shareable Instagram-size progress card. One-tap workout summaries go to the client via WhatsApp or iMessage. **Client view** is a locked, client-friendly screen to hand over on the iPad: they do their check-in, tick habits, log food and see their progress. |
+| **Group classes** | For coaches who teach studio classes (e.g. BFT): a **lesson programme library** organised by block and week. Lessons are built from blocks: stations, circuits, EMOM, AMRAP, intervals, Tabata, partner YGIG, for-time and coach-led segments, with heart-rate zones, regressions and set-up notes. A full-screen **class timer** made for an iPad on the floor or mirrored to the studio TV shows the station board, beeps 3-2-1 and can give voice cues. There is also a studio timetable, attendance check-in, post-class notes and pay per studio. Classes that PT clients attend count toward their training load. |
 | **Business** | Session packages with automatic deduction, renewal and unpaid flags, revenue and sessions per month, and attendance rate. |
 | **Schedule** | Week strip with day agenda, recurring weekly bookings, no-show tracking, and calendar (.ics) invites. |
 | **Tools** | 1RM calculator with % table, plate calculator, Tabata/EMOM interval timer, and an RPE ↔ RIR chart. |
 | **Data** | Local-first (IndexedDB). JSON backup and restore with photos, a demo studio, and kg/lb units. |
+
+![Group classes](docs/classes.png)
 
 See [docs/FEATURES.md](docs/FEATURES.md) for the full feature guide and the roadmap of ideas that need a backend.
 
@@ -73,3 +76,5 @@ src/
 - **Nutrition targets** combine Mifflin–St Jeor BMR × activity factor with a goal adjustment (−20% / 0 / +10%). Protein is 1.8–2.2 g/kg; fat is at least 0.8 g/kg or 25% of calories.
 
 These are coaching aids, not medical advice. The PAR-Q screen flags clients who need medical clearance.
+
+Atlas is an independent tool and isn't affiliated with Body Fit Training (BFT) or any studio brand. The program names in the class builder are only labels, and the bundled example lessons are generic samples rather than any studio's official programming.
