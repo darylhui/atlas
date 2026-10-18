@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Check, ChevronLeft, Clock, Ellipsis, Info, Plus, Repeat, StickyNote, Timer, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Bandage, Check, ChevronLeft, Clock, Ellipsis, Info, Plus, Repeat, StickyNote, Timer, Trash2, TriangleAlert, X } from 'lucide-react';
 import { actions, activePackage, useStore } from '../lib/store';
 import type { Exercise, SetType, Units, WorkoutExercise, WorkoutSession, WorkoutSet } from '../lib/types';
 import { bestsByExercise, completed, e1rm, isSetPR, lastPerformance, sessionPRs, type Bests } from '../lib/analytics/strength';
@@ -118,7 +118,7 @@ export default function WorkoutLogger() {
     patchSet(ex.id, set.id, filled);
     const merged = { ...set, ...filled } as WorkoutSet;
     if (isSetPR(merged, bests.get(ex.exerciseId))) {
-      toast(`🏆 New PR — ${def?.name} ${fmtWeight(merged.weight, settings.units)} × ${merged.reps}`);
+      toast(`New PR — ${def?.name} ${fmtWeight(merged.weight, settings.units)} × ${merged.reps}`);
     }
     const secs = ex.restSec ?? settings.defaultRestSec;
     if (secs > 0) setRest({ until: Date.now() + secs * 1000, total: secs });
@@ -141,7 +141,7 @@ export default function WorkoutLogger() {
               aria-label="Workout name"
               value={session.name}
               onChange={(e) => update((s) => ({ ...s, name: e.target.value }))}
-              style={{ minHeight: 30, padding: '2px 6px', margin: '0 -6px', background: 'transparent', border: 0, fontWeight: 750, fontSize: 17 }}
+              style={{ minHeight: 30, padding: '2px 6px', margin: '0 -6px', background: 'transparent', border: 0, boxShadow: 'none', borderRadius: 4, fontWeight: 500, fontSize: 18 }}
             />
             <div className="xs faint row" style={{ gap: 6 }}>
               {firstName(client.name)} · <Elapsed start={session.startedAt} /> · {doneSets}/{totalSets} sets
@@ -156,7 +156,7 @@ export default function WorkoutLogger() {
       <div className="stack mt-1" style={{ paddingBottom: rest ? 90 : 0 }}>
         {ready && ready.zone !== 'good' && (
           <div className={`banner${ready.zone === 'critical' ? ' danger' : ''}`}>
-            <span>⚠️</span>
+            <TriangleAlert size={20} />
             <div>
               <b>Readiness {readyScore} · {ready.label}.</b> <span className="muted">{ready.advice}</span>
             </div>
@@ -164,7 +164,7 @@ export default function WorkoutLogger() {
         )}
         {client.injuries && (
           <div className="banner info">
-            <span>🩹</span>
+            <Bandage size={20} />
             <span className="small">{client.injuries}</span>
           </div>
         )}
@@ -216,7 +216,7 @@ export default function WorkoutLogger() {
               nav(`/clients/${client.id}`, { replace: true });
             }
           }}
-          style={{ color: '#ff8a8a' }}
+          style={{ color: 'var(--md-error)' }}
         >
           Discard workout
         </Button>
@@ -450,8 +450,8 @@ const ExerciseCard = memo(function ExerciseCard({ ex, def, units, prev, bests, o
         </IconButton>
       </div>
       {ex.notes && (
-        <div className="small" style={{ padding: '0 16px 8px', color: 'var(--warning)' }}>
-          📝 {ex.notes}
+        <div className="small row" style={{ padding: '0 16px 8px', gap: 6, color: 'var(--warning)' }}>
+          <StickyNote size={14} style={{ flex: 'none' }} /> {ex.notes}
         </div>
       )}
       <div className={`set-grid set-head${grid}`}>

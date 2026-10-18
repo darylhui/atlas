@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ClipboardList, Repeat, Share2, Trash2, Trophy } from 'lucide-react';
+import { ClipboardList, Repeat, Share2, StickyNote, Trash2, Trophy } from 'lucide-react';
 import { actions, useStore } from '../lib/store';
 import type { WorkoutSession } from '../lib/types';
 import { sessionLoad } from '../lib/analytics/recovery';
@@ -41,13 +41,13 @@ export default function SessionSummary() {
 
   const summaryText = () => {
     const lines = [
-      `💪 Workout summary — ${firstName(client.name)}, ${fmtDay(session.date, { weekday: true })}`,
+      `Workout summary — ${firstName(client.name)}, ${fmtDay(session.date, { weekday: true })}`,
       `${session.name} · ${session.durationMin ?? '–'} min${session.sessionRpe ? ` · RPE ${session.sessionRpe}` : ''}`,
       '',
-      ...session.exercises.map((e) => `• ${exMap.get(e.exerciseId)?.name}: ${e.sets.map((s) => fmtSet(e.exerciseId, s)).join(', ')}${prSet.has(e.exerciseId) ? ' 🏆 PR' : ''}`),
+      ...session.exercises.map((e) => `• ${exMap.get(e.exerciseId)?.name}: ${e.sets.map((s) => fmtSet(e.exerciseId, s)).join(', ')}${prSet.has(e.exerciseId) ? ' (PR)' : ''}`),
       '',
       vol > 0 ? `Total volume: ${Math.round(toDisplayWeight(vol, units)).toLocaleString()} ${wu}` : '',
-      prs.length ? `🏆 ${prs.filter((p) => p.kind === 'e1rm').length || prs.length} new personal record${prs.length > 1 ? 's' : ''}!` : '',
+      prs.length ? `${prs.filter((p) => p.kind === 'e1rm').length || prs.length} new personal record${prs.length > 1 ? 's' : ''}!` : '',
       session.notes ? `\nCoach notes: ${session.notes}` : '',
       `\n— ${data.settings.trainerName || 'Your coach'}${data.settings.businessName ? `, ${data.settings.businessName}` : ''}`,
     ];
@@ -71,7 +71,7 @@ export default function SessionSummary() {
   };
 
   return (
-    <Page title={justDone ? 'Workout complete 🎉' : session.name} back={justDone ? `/clients/${client.id}` : true} compact>
+    <Page title={justDone ? 'Workout complete' : session.name} back={justDone ? `/clients/${client.id}` : true} compact>
       <div className="row">
         <Avatar name={client.name} color={client.color} size={44} />
         <div className="grow">
@@ -91,7 +91,7 @@ export default function SessionSummary() {
       </div>
 
       {prs.length > 0 && (
-        <Card style={{ background: 'linear-gradient(135deg, rgba(198,244,50,0.14), rgba(198,244,50,0.03))', borderColor: 'rgba(198,244,50,0.3)' }}>
+        <Card style={{ background: 'linear-gradient(135deg, rgba(170,214,0,0.14), rgba(170,214,0,0.03))', borderColor: 'rgba(170,214,0,0.3)' }}>
           <div className="row" style={{ gap: 8 }}>
             <Trophy size={20} color="var(--accent)" />
             <span className="bold">{prs.length} personal record{prs.length > 1 ? 's' : ''}</span>
@@ -153,7 +153,7 @@ export default function SessionSummary() {
                     </span>
                   ))}
                 </div>
-                {e.notes && <div className="small faint mt-1">📝 {e.notes}</div>}
+                {e.notes && <div className="small faint mt-1 row" style={{ gap: 6 }}><StickyNote size={14} style={{ flex: 'none' }} /> {e.notes}</div>}
               </Card>
             );
           })}

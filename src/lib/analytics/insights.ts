@@ -73,7 +73,7 @@ export function clientAlerts(c: Client, data: AppData): Alert[] {
   if (c.dob) {
     const nb = nextBirthday(c.dob, t);
     const inDays = daysBetween(t, nb);
-    if (inDays <= 7) add({ kind: 'birthday', severity: 'good', title: inDays === 0 ? 'Birthday today 🎂' : `Birthday in ${inDays} day${inDays === 1 ? '' : 's'} 🎂`, detail: 'Send a message or a small gift.' });
+    if (inDays <= 7) add({ kind: 'birthday', severity: 'good', title: inDays === 0 ? 'Birthday today' : `Birthday in ${inDays} day${inDays === 1 ? '' : 's'}`, detail: 'Send a message or a small gift.' });
   }
 
   for (const g of data.goals.filter((g) => g.clientId === c.id && g.deadline && !g.achievedAt)) {

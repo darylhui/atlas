@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Check, Target, Trash2 } from 'lucide-react';
+import { HABIT_ICON_KEYS, NamedIcon } from '../../components/icons';
 import { actions, useStore } from '../../lib/store';
 import type { Client, Goal, GoalKind, Habit } from '../../lib/types';
 import { achievements, goalProgress, habitStreak, habitWeek } from '../../lib/analytics/engagement';
@@ -56,7 +57,7 @@ export default function GoalsTab({ client }: { client: Client }) {
         </div>
       </Section>
 
-      <Section title="Habits this week" action={<button className="section-link" onClick={() => setEditHabit({ id: uid(), clientId: client.id, name: '', emoji: '✅', perWeek: 5 })}>+ New habit</button>}>
+      <Section title="Habits this week" action={<button className="section-link" onClick={() => setEditHabit({ id: uid(), clientId: client.id, name: '', icon: 'check', perWeek: 5 })}>+ New habit</button>}>
         <div className="card flush">
           {habits.map((h) => {
             const w = habitWeek(h, data.habitLogs);
@@ -64,12 +65,12 @@ export default function GoalsTab({ client }: { client: Client }) {
             return (
               <div key={h.id} className="list-item" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 10 }}>
                 <button className="row-between" onClick={() => setEditHabit(h)} style={{ textAlign: 'left' }}>
-                  <span className="row" style={{ gap: 8 }}>
-                    <span style={{ fontSize: 20 }}>{h.emoji}</span>
+                  <span className="row" style={{ gap: 12 }}>
+                    <span className="icon-tile"><NamedIcon name={h.icon} size={20} /></span>
                     <span className="bold">{h.name}</span>
                   </span>
                   <span className="small faint">
-                    {w.done}/{w.target} this week{streak > 1 ? ` · 🔥 ${streak}` : ''}
+                    {w.done}/{w.target} this week{streak > 1 ? ` · ${streak}-day streak` : ''}
                   </span>
                 </button>
                 <div className="grid-4" style={{ gridTemplateColumns: 'repeat(7, 1fr)', gap: 5 }}>
@@ -84,14 +85,14 @@ export default function GoalsTab({ client }: { client: Client }) {
                         aria-label={`${h.name} ${fmtDay(d)}${done ? ' done' : ''}`}
                         style={{
                           height: 40,
-                          borderRadius: 10,
+                          borderRadius: 999,
                           display: 'grid',
                           placeItems: 'center',
                           fontSize: 11,
                           fontWeight: 700,
                           color: done ? 'var(--accent-ink)' : d === t ? 'var(--text)' : 'var(--text-3)',
                           background: done ? 'var(--accent)' : 'var(--surface-2)',
-                          border: d === t && !done ? '1px solid var(--border-strong)' : '1px solid transparent',
+                          boxShadow: d === t && !done ? 'inset 0 0 0 1px var(--border-strong)' : 'none',
                           opacity: future ? 0.35 : 1,
                         }}
                       >
@@ -111,7 +112,7 @@ export default function GoalsTab({ client }: { client: Client }) {
         <div className="badge-grid">
           {badges.map((b) => (
             <div key={b.id} className={`badge${b.earned ? '' : ' locked'}`} title={b.description}>
-              <span className="emo">{b.emoji}</span>
+              <span className="emo"><NamedIcon name={b.icon} size={24} /></span>
               <span className="badge-title">{b.title}</span>
               <span className="xs faint">{b.earned ? b.description : b.progressLabel}</span>
               {!b.earned && (
@@ -175,7 +176,7 @@ function GoalSheet({ goal, onClose }: { goal: Goal; onClose: () => void }) {
     if (p.achieved && !next.achievedAt) {
       next.achievedAt = today();
       celebrate();
-      toast('🎯 Goal achieved!');
+      toast('Goal achieved!');
     }
     actions().upsert('goals', next);
     onClose();
@@ -255,8 +256,6 @@ function autoTitle(g: Goal, exName: string | undefined, units: 'metric' | 'imper
   }
 }
 
-const EMOJIS = ['✅', '👟', '💧', '🍗', '🥦', '😴', '🧘', '💊', '📵', '🚶', '🚫', '🍎', '📖', '☀️', '🏃'];
-
 function HabitSheet({ habit, onClose }: { habit: Habit; onClose: () => void }) {
   const exists = useStore((s) => s.data.habits.some((h) => h.id === habit.id));
   const [h, setH] = useState(habit);
@@ -284,9 +283,16 @@ function HabitSheet({ habit, onClose }: { habit: Habit; onClose: () => void }) {
         </Field>
         <Field label="Icon">
           <div className="row wrap" style={{ gap: 6 }}>
-            {EMOJIS.map((e) => (
-              <button key={e} onClick={() => setH({ ...h, emoji: e })} style={{ width: 44, height: 44, borderRadius: 12, fontSize: 22, background: h.emoji === e ? 'var(--accent-soft)' : 'var(--surface-2)', border: h.emoji === e ? '1px solid var(--accent)' : '1px solid var(--border)' }}>
-                {e}
+            {HABIT_ICON_KEYS.map((k) => (
+              <button
+                key={k}
+                type="button"
+                aria-label={k}
+                aria-pressed={h.icon === k}
+                onClick={() => setH({ ...h, icon: k })}
+                style={{ width: 48, height: 48, borderRadius: 12, display: 'grid', placeItems: 'center', background: h.icon === k ? 'var(--md-primary)' : 'var(--md-surface-high)', color: h.icon === k ? 'var(--md-on-primary)' : 'var(--md-on-surface-variant)' }}
+              >
+                <NamedIcon name={k} size={22} />
               </button>
             ))}
           </div>

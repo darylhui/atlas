@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Download, RotateCcw, Sparkles, Upload } from 'lucide-react';
+import { Download, Eye, Lock, RotateCcw, Sparkles, TriangleAlert, Upload } from 'lucide-react';
 import { actions, emptyData, useStore } from '../lib/store';
 import type { AppData, Units } from '../lib/types';
 import { loadPhoto, savePhoto } from '../lib/db';
@@ -118,12 +118,12 @@ export default function SettingsPage() {
         <div className="stack">
           {__SINGLE_FILE__ && (
             <div className="banner">
-              <span>👀</span>
+              <Eye size={20} />
               <span className="small">This is a preview link. Backup files and installing to the Home Screen work in the full hosted version of Atlas.</span>
             </div>
           )}
           <div className={`banner${persistent ? ' info' : ''}`}>
-            <span>{persistent ? '🔒' : '⚠️'}</span>
+            {persistent ? <Lock size={20} /> : <TriangleAlert size={20} />}
             <span className="small">
               {persistent
                 ? 'All data is stored privately on this device. Export a backup regularly — and before switching devices.'

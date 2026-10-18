@@ -42,7 +42,8 @@ export function goalProgress(goal: Goal, data: Pick<AppData, 'sessions' | 'measu
 
 export interface Achievement {
   id: string;
-  emoji: string;
+  /** Key into NAMED_ICONS. */
+  icon: string;
   title: string;
   description: string;
   earned: boolean;
@@ -91,9 +92,9 @@ export function achievements(clientId: ID, data: AppData): Achievement[] {
   const goalsHit = data.goals.filter((g) => g.clientId === clientId && (g.achievedAt || goalProgress(g, data).achieved)).length;
   const photos = data.photos.filter((p) => p.clientId === clientId).length;
 
-  const tier = (id: string, emoji: string, title: string, description: string, value: number, target: number, unit = ''): Achievement => ({
+  const tier = (id: string, icon: string, title: string, description: string, value: number, target: number, unit = ''): Achievement => ({
     id,
-    emoji,
+    icon,
     title,
     description,
     earned: value >= target,
@@ -102,22 +103,22 @@ export function achievements(clientId: ID, data: AppData): Achievement[] {
   });
 
   return [
-    tier('s1', '🚀', 'First Rep', 'Complete your first session', n, 1),
-    tier('s10', '💪', 'Committed', 'Complete 10 sessions', n, 10),
-    tier('s25', '🔥', 'Dedicated', 'Complete 25 sessions', n, 25),
-    tier('s50', '🏅', 'Half Century', 'Complete 50 sessions', n, 50),
-    tier('s100', '👑', 'Centurion', 'Complete 100 sessions', n, 100),
-    tier('w4', '📅', 'Consistency', 'Train 4 weeks in a row', weekRun, 4, ' wk'),
-    tier('w12', '🗓️', 'Habit Formed', 'Train 12 weeks in a row', weekRun, 12, ' wk'),
-    tier('pr1', '🏆', 'Record Breaker', 'Set your first personal record', prs, 1),
-    tier('pr10', '⚡', 'PR Machine', 'Set 10 personal records', prs, 10),
-    tier('pr25', '🦾', 'Unstoppable', 'Set 25 personal records', prs, 25),
-    tier('t10', '🏋️', '10 Tonne Club', 'Lift 10,000 kg total volume', tonnage, 10_000, ' kg'),
-    tier('t100', '🌋', '100 Tonne Club', 'Lift 100,000 kg total volume', tonnage, 100_000, ' kg'),
-    tier('c7', '🧘', 'Self-Aware', 'Check in 7 days in a row', checkRun, 7, ' d'),
-    tier('n7', '🥗', 'Fuel Tracker', 'Log nutrition 7 days in a row', foodRun, 7, ' d'),
-    tier('g1', '🎯', 'Goal Getter', 'Achieve a goal', goalsHit, 1),
-    tier('p1', '📸', 'Day One', 'Take your first progress photo', photos, 1),
+    tier('s1', 'rocket', 'First Rep', 'Complete your first session', n, 1),
+    tier('s10', 'strong', 'Committed', 'Complete 10 sessions', n, 10),
+    tier('s25', 'flame', 'Dedicated', 'Complete 25 sessions', n, 25),
+    tier('s50', 'medal', 'Half Century', 'Complete 50 sessions', n, 50),
+    tier('s100', 'crown', 'Centurion', 'Complete 100 sessions', n, 100),
+    tier('w4', 'calendar-check', 'Consistency', 'Train 4 weeks in a row', weekRun, 4, ' wk'),
+    tier('w12', 'calendar-range', 'Habit Formed', 'Train 12 weeks in a row', weekRun, 12, ' wk'),
+    tier('pr1', 'trophy', 'Record Breaker', 'Set your first personal record', prs, 1),
+    tier('pr10', 'bolt', 'PR Machine', 'Set 10 personal records', prs, 10),
+    tier('pr25', 'dumbbell', 'Unstoppable', 'Set 25 personal records', prs, 25),
+    tier('t10', 'dumbbell', '10 Tonne Club', 'Lift 10,000 kg total volume', tonnage, 10_000, ' kg'),
+    tier('t100', 'mountain', '100 Tonne Club', 'Lift 100,000 kg total volume', tonnage, 100_000, ' kg'),
+    tier('c7', 'mobility', 'Self-Aware', 'Check in 7 days in a row', checkRun, 7, ' d'),
+    tier('n7', 'greens', 'Fuel Tracker', 'Log nutrition 7 days in a row', foodRun, 7, ' d'),
+    tier('g1', 'target', 'Goal Getter', 'Achieve a goal', goalsHit, 1),
+    tier('p1', 'camera', 'Day One', 'Take your first progress photo', photos, 1),
   ];
 }
 

@@ -154,7 +154,7 @@ export default function RecoveryTab({ client }: { client: Client }) {
         </ChartCard>
 
         <ChartCard title="Soreness hotspots" subtitle="Times reported sore, last 30 days">
-          {sore.length ? <HBars rows={sore.slice(0, 8).map(([m, n]) => ({ label: MUSCLE_LABEL[m], value: n }))} /> : <div className="small faint">No soreness reported. 🎉</div>}
+          {sore.length ? <HBars rows={sore.slice(0, 8).map(([m, n]) => ({ label: MUSCLE_LABEL[m], value: n }))} /> : <div className="small faint">No soreness reported.</div>}
         </ChartCard>
 
         {hrv.length > 2 && (

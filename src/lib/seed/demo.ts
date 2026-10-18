@@ -546,14 +546,14 @@ export function buildDemoData(): AppData {
 
     // ----- Habits -----
     const habitSets: [string, string, number][][] = [
-      [['Hit protein target', '🍗', 6], ['8,000+ steps', '👟', 5], ['In bed by 11pm', '😴', 5]],
-      [['Hit protein target', '🍗', 7], ['Creatine 5 g', '💊', 7], ['3L water', '💧', 6]],
-      [['10-min knee rehab', '🦵', 5], ['Walk at lunch', '🚶‍♀️', 4], ['No phone in bed', '📵', 5]],
-      [['Take BP medication', '💊', 7], ['10,000 steps', '👟', 5], ['No alcohol weeknights', '🚫', 4]],
-      [['Mobility routine', '🧘‍♀️', 5], ['8h sleep', '😴', 5], ['Pre-training carbs', '🍌', 3]],
+      [['Hit protein target', 'protein', 6], ['8,000+ steps', 'steps', 5], ['In bed by 11pm', 'sleep', 5]],
+      [['Hit protein target', 'protein', 7], ['Creatine 5 g', 'supplement', 7], ['3L water', 'water', 6]],
+      [['10-min knee rehab', 'rehab', 5], ['Walk at lunch', 'walk', 4], ['No phone in bed', 'no-phone', 5]],
+      [['Take BP medication', 'supplement', 7], ['10,000 steps', 'steps', 5], ['No alcohol weeknights', 'avoid', 4]],
+      [['Mobility routine', 'mobility', 5], ['8h sleep', 'sleep', 5], ['Pre-training carbs', 'carbs', 3]],
     ];
-    for (const [name, emoji, perWeek] of habitSets[pi]) {
-      const habit: Habit = { id: uid(), clientId, name, emoji, perWeek };
+    for (const [name, icon, perWeek] of habitSets[pi]) {
+      const habit: Habit = { id: uid(), clientId, name, icon, perWeek };
       data.habits.push(habit);
       for (let d = addDays(t0, -27); d < t0; d = addDays(d, 1)) {
         if (rand() < (perWeek / 7) * 0.9) data.habitLogs.push({ habitId: habit.id, date: d });

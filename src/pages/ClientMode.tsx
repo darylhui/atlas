@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { create } from 'zustand';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CalendarDays, Check, Droplets, Lock, Plus, Trophy } from 'lucide-react';
+import { CalendarDays, Check, Delete, Droplets, Flame, Lock, Plus, Trophy } from 'lucide-react';
+import { NamedIcon } from '../components/icons';
 import { actions, useStore } from '../lib/store';
 import type { CheckIn } from '../lib/types';
 import { achievements, goalProgress, habitStreak, habitWeek } from '../lib/analytics/engagement';
@@ -81,7 +82,7 @@ export default function ClientMode() {
     if (!checkIn) return;
     actions().upsert('checkIns', checkIn);
     setCheckIn(null);
-    toast('Thanks! Check-in saved ✅');
+    toast('Thanks! Check-in saved');
   };
 
   return (
@@ -90,7 +91,7 @@ export default function ClientMode() {
         <div className="page-head-row">
           <Avatar name={client.name} color={client.color} size={44} />
           <div className="grow">
-            <h1 className="page-title">Hi {firstName(client.name)} 👋</h1>
+            <h1 className="page-title">Hi {firstName(client.name)}</h1>
             <div className="page-sub">{data.settings.businessName}</div>
           </div>
           <IconButton label="Exit client view" onClick={() => (pin ? setExiting(true) : exit())}>
@@ -134,8 +135,8 @@ export default function ClientMode() {
 
           <div className="grid-2">
             <Stat label="Sessions this month" value={stats.month} />
-            <Stat label="Week streak" value={stats.streak} unit={stats.streak >= 4 ? '🔥' : ''} />
-            <Stat label="Personal records" value={stats.prs} unit="🏆" />
+            <Stat label="Week streak" value={stats.streak} icon={stats.streak >= 4 ? <Flame size={16} color="var(--serious)" /> : undefined} />
+            <Stat label="Personal records" value={stats.prs} icon={<Trophy size={16} color="var(--warning)" />} />
             <Stat label="Badges" value={`${earned.length}/${stats.badges.length}`} />
           </div>
         </div>
@@ -170,15 +171,15 @@ export default function ClientMode() {
                       actions().toggleHabit(h.id, t);
                       if (!done && w.done + 1 === w.target) {
                         celebrate();
-                        toast(`Weekly target hit: ${h.name}! 🎉`);
+                        toast(`Weekly target hit: ${h.name}!`);
                       }
                     }}
                   >
-                    <span style={{ fontSize: 24 }}>{h.emoji}</span>
+                    <span className="icon-tile"><NamedIcon name={h.icon} size={22} /></span>
                     <div className="grow">
                       <div className="bold">{h.name}</div>
                       <div className="xs faint">
-                        {w.done}/{w.target} this week{streak > 1 ? ` · 🔥 ${streak}-day streak` : ''}
+                        {w.done}/{w.target} this week{streak > 1 ? ` · ${streak}-day streak` : ''}
                       </div>
                     </div>
                     <span className={`set-check${done ? ' on' : ''}`}>
@@ -245,7 +246,7 @@ export default function ClientMode() {
                     <div key={g.id}>
                       <div className="row-between small">
                         <span className="bold">{g.title}</span>
-                        <span className="faint">{p.achieved ? '✅ Done' : `${Math.round(p.pct * 100)}%`}</span>
+                        <span className="faint">{p.achieved ? 'Done' : `${Math.round(p.pct * 100)}%`}</span>
                       </div>
                       <div className="mt-1">
                         <Progress pct={p.pct} color={p.achieved ? 'var(--good)' : undefined} />
@@ -299,7 +300,7 @@ export default function ClientMode() {
           <div className="badge-grid">
             {stats.badges.map((b) => (
               <div key={b.id} className={`badge${b.earned ? '' : ' locked'}`}>
-                <span className="emo">{b.emoji}</span>
+                <span className="emo"><NamedIcon name={b.icon} size={24} /></span>
                 <span className="badge-title">{b.title}</span>
                 <span className="xs faint">{b.earned ? b.description : b.progressLabel}</span>
               </div>
@@ -371,17 +372,17 @@ function PinPad({ pin, onSuccess, onClose }: { pin: string; onSuccess: () => voi
           ))}
         </div>
         <div className="grid-3" style={{ width: '100%', maxWidth: 300 }}>
-          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map((d) =>
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map((d) =>
             d === '' ? (
               <span key="blank" />
             ) : (
-              <button key={d} className="btn btn-secondary" style={{ minHeight: 64, fontSize: 24 }} onClick={() => (d === '⌫' ? setV(v.slice(0, -1)) : press(d))}>
-                {d}
+              <button key={d} className="btn btn-secondary" style={{ minHeight: 64, fontSize: 24 }} aria-label={d === 'del' ? 'Delete digit' : undefined} onClick={() => (d === 'del' ? setV(v.slice(0, -1)) : press(d))}>
+                {d === 'del' ? <Delete size={24} /> : d}
               </button>
             ),
           )}
         </div>
-        {err && <div className="small" style={{ color: '#ff8a8a' }}>Incorrect PIN</div>}
+        {err && <div className="small" style={{ color: 'var(--md-error)' }}>Incorrect PIN</div>}
       </div>
     </Sheet>
   );

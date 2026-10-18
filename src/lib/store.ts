@@ -4,7 +4,7 @@ import { EXERCISES } from './seed/exercises';
 import { FOODS } from './seed/foods';
 import { STARTER_TEMPLATES } from './seed/templates';
 import { lastPerformance } from './analytics/strength';
-import type { AppData, ID, Package, Settings, WorkoutExercise, WorkoutSession, WorkoutSet } from './types';
+import type { AppData, Habit, ID, Package, Settings, WorkoutExercise, WorkoutSession, WorkoutSet } from './types';
 import { dayKey, today, uid } from './util';
 
 export const DATA_VERSION = 1;
@@ -57,6 +57,12 @@ export function emptyData(): AppData {
   };
 }
 
+const LEGACY_HABIT_EMOJI: Record<string, string> = {
+  '✅': 'check', '👟': 'steps', '💧': 'water', '🍗': 'protein', '🥦': 'greens', '😴': 'sleep', '🧘': 'mobility',
+  '💊': 'supplement', '📵': 'no-phone', '🚶': 'walk', '🚫': 'avoid', '🍎': 'fruit', '🍌': 'carbs', '📖': 'read',
+  '☀': 'sun', '🏃': 'cardio', '🦵': 'rehab',
+};
+
 /** Fill in anything missing from older saves and merge new built-in content. */
 export function normalize(raw: Partial<AppData>): AppData {
   const base = emptyData();
@@ -65,6 +71,13 @@ export function normalize(raw: Partial<AppData>): AppData {
   for (const e of EXERCISES) if (!exIds.has(e.id)) data.exercises.push(e);
   const foodIds = new Set(data.foods.map((f) => f.id));
   for (const f of FOODS) if (!foodIds.has(f.id)) data.foods.push(f);
+  // Habits used to store an emoji; map those onto named icons.
+  data.habits = data.habits.map((h) => {
+    const legacy = (h as Habit & { emoji?: string }).emoji;
+    if (h.icon || legacy == null) return h;
+    const { emoji: _drop, ...rest } = h as Habit & { emoji?: string };
+    return { ...rest, icon: LEGACY_HABIT_EMOJI[legacy.replace(/\uFE0F|\u200D.*/g, '')] ?? 'check' };
+  });
   data.version = DATA_VERSION;
   return data;
 }

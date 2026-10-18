@@ -9,18 +9,18 @@ import { firstName, today, uid } from '../lib/util';
 import { Button, Card, Empty, Field, NumberInput, Page, Ring, Scale, Section, Stepper, toast, ZonePill } from '../components/ui';
 
 export const SCALES = {
-  sleepQuality: { labels: ['Awful', 'Poor', 'OK', 'Good', 'Great'], emojis: ['😫', '😕', '😐', '🙂', '😴'] },
-  energy: { labels: ['Drained', 'Low', 'OK', 'Good', 'Charged'], emojis: ['🪫', '😮‍💨', '😐', '💪', '⚡'] },
-  mood: { labels: ['Low', 'Meh', 'OK', 'Good', 'Great'], emojis: ['😞', '😕', '😐', '🙂', '😄'] },
-  stress: { labels: ['None', 'Mild', 'Some', 'High', 'Very high'], emojis: ['😌', '🙂', '😐', '😣', '🤯'] },
-  soreness: { labels: ['None', 'Mild', 'Moderate', 'Sore', 'Very'], emojis: ['🟢', '🟡', '🟠', '🔴', '🆘'] },
+  sleepQuality: { labels: ['Awful', 'Poor', 'OK', 'Good', 'Great'] },
+  energy: { labels: ['Drained', 'Low', 'OK', 'Good', 'Charged'] },
+  mood: { labels: ['Low', 'Meh', 'OK', 'Good', 'Great'] },
+  stress: { labels: ['None', 'Mild', 'Some', 'High', 'Very high'] },
+  soreness: { labels: ['None', 'Mild', 'Moderate', 'Sore', 'Very'] },
 };
 
 export function CheckInFields({ c, set }: { c: CheckIn; set: (p: Partial<CheckIn>) => void }) {
   const toggleArea = (m: MuscleGroup) => set({ soreAreas: c.soreAreas.includes(m) ? c.soreAreas.filter((x) => x !== m) : [...c.soreAreas, m] });
   return (
     <div className="stack-lg">
-      <Section title="😴 Sleep">
+      <Section title="Sleep">
         <div className="stack">
           <Card className="row-between">
             <div>
@@ -34,7 +34,7 @@ export function CheckInFields({ c, set }: { c: CheckIn; set: (p: Partial<CheckIn
         </div>
       </Section>
 
-      <Section title="⚡ How do you feel?">
+      <Section title="How do you feel?">
         <div className="stack">
           <div className="label">Energy</div>
           <Scale value={c.energy} onChange={(v) => set({ energy: v })} {...SCALES.energy} />
@@ -45,7 +45,7 @@ export function CheckInFields({ c, set }: { c: CheckIn; set: (p: Partial<CheckIn
         </div>
       </Section>
 
-      <Section title="💪 Muscle soreness">
+      <Section title="Muscle soreness">
         <div className="stack">
           <Scale value={c.soreness} onChange={(v) => set({ soreness: v, soreAreas: v === 1 ? [] : c.soreAreas })} {...SCALES.soreness} />
           {c.soreness > 1 && (
@@ -111,7 +111,7 @@ export default function CheckInForm() {
 
       <CheckInFields c={c} set={set} />
 
-      <Section title="⌚ Wearable data (optional)">
+      <Section title="Wearable data (optional)">
         <div className="grid-2">
           <Field label="HRV (ms)" hint="Morning reading, e.g. from Apple Watch or Whoop">
             <NumberInput value={c.hrv} onChange={(v) => set({ hrv: v })} decimal={false} placeholder="e.g. 62" />

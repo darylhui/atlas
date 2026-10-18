@@ -242,7 +242,8 @@ export interface Habit {
   id: ID;
   clientId: ID;
   name: string;
-  emoji: string;
+  /** Key into NAMED_ICONS (older backups may hold an emoji here). */
+  icon: string;
   /** Target number of completions per week (1-7). */
   perWeek: number;
 }

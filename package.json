@@ -14,6 +14,7 @@
     "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/roboto-flex": "^5.3.0",
     "idb-keyval": "^6.3.0",
     "lucide-react": "^1.59.0",
     "react": "^19.3.1",

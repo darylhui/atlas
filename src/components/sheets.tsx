@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, CalendarPlus, ClipboardList, Dumbbell, Plus, Repeat, Salad, UserPlus } from 'lucide-react';
+import { Activity, CalendarPlus, Check, ClipboardList, Dumbbell, Plus, Repeat, Salad, UserPlus } from 'lucide-react';
 import { actions, useData } from '../lib/store';
 import type { Client, Exercise, ExerciseCategory, ID, MuscleGroup } from '../lib/types';
 import { CATEGORY_LABEL, EQUIPMENT_LABEL, MUSCLE_LABEL } from '../lib/seed/exercises';
@@ -223,7 +223,7 @@ export function ExercisePicker({ open, onClose, onPick, multi }: { open: boolean
                 title={e.name}
                 subtitle={`${MUSCLE_LABEL[e.primary]} · ${EQUIPMENT_LABEL[e.equipment]}`}
                 chevron={false}
-                right={multi ? <span className={`set-check${on ? ' on' : ''}`} style={{ width: 30, height: 30 }}>{on ? '✓' : ''}</span> : undefined}
+                right={multi ? <span className={`set-check${on ? ' on' : ''}`} style={{ width: 32, height: 32 }}>{on ? <Check size={18} strokeWidth={3} /> : null}</span> : undefined}
                 onClick={() => {
                   if (!multi) {
                     onPick([e.id]);

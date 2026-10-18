@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'zustand';
-import { ChevronLeft, ChevronRight, Minus, Plus, Search, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Minus, Plus, Search, TrendingDown, TrendingUp, X } from 'lucide-react';
 import type { Zone } from '../lib/analytics/recovery';
 import { initials } from '../lib/util';
 
@@ -166,8 +166,8 @@ export function Delta({ value, goodWhen = 'up', suffix = '', dp = 1, label }: { 
   const good = goodWhen === 'none' ? undefined : goodWhen === 'up' ? r > 0 : r < 0;
   const cls = r === 0 || good === undefined ? '' : good ? 'delta-good' : 'delta-bad';
   return (
-    <span className={cls}>
-      {r > 0 ? '▲' : r < 0 ? '▼' : '•'} {Math.abs(r).toLocaleString()}
+    <span className={cls} style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+      {r > 0 ? <TrendingUp size={14} /> : r < 0 ? <TrendingDown size={14} /> : <Minus size={14} />} {Math.abs(r).toLocaleString()}
       {suffix}
       {label && <span className="faint"> {label}</span>}
     </span>
@@ -319,13 +319,13 @@ export function Stepper({ value, onChange, step = 1, min = 0, max = 999, format 
   );
 }
 
-/** Five-point scale picker with emoji anchors. */
-export function Scale({ value, onChange, labels, emojis }: { value: number; onChange: (v: number) => void; labels: string[]; emojis: string[] }) {
+/** Five-point scale picker; each option shows its value above the label. */
+export function Scale({ value, onChange, labels }: { value: number; onChange: (v: number) => void; labels: string[] }) {
   return (
     <div className="scale">
       {[1, 2, 3, 4, 5].map((n) => (
         <button key={n} className={value === n ? 'on' : ''} onClick={() => onChange(n)} aria-pressed={value === n}>
-          <span className="emo">{emojis[n - 1]}</span>
+          <span className="emo">{n}</span>
           {labels[n - 1]}
         </button>
       ))}

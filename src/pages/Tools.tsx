@@ -49,7 +49,7 @@ export function PlateCalculator({ initialKg }: { initialKg?: number }) {
                 placeItems: 'center',
                 fontSize: 9,
                 fontWeight: 800,
-                color: '#0b0c0e',
+                color: '#12140d',
                 writingMode: 'vertical-rl',
               }}
             >
@@ -162,10 +162,10 @@ function IntervalTimer() {
 
   return (
     <div className="stack">
-      <Card style={{ borderColor: phase === 'work' ? 'rgba(198,244,50,0.4)' : undefined }}>
+      <Card style={{ borderColor: phase === 'work' ? 'rgba(170,214,0,0.4)' : undefined }}>
         <div className="center">
           <div className="bold" style={{ color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            {phase === 'ready' ? 'Ready' : phase === 'done' ? 'Done 🎉' : phase}
+            {phase === 'ready' ? 'Ready' : phase === 'done' ? 'Done' : phase}
           </div>
           <div className="hero-num tabular" style={{ fontSize: 80, marginTop: 6 }}>
             {phase === 'ready' ? fmtDuration(work) : fmtDuration(Math.ceil(left))}

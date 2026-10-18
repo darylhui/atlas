@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Copy, Droplets, Plus, Salad, Trash2 } from 'lucide-react';
+import { Apple, ChevronLeft, ChevronRight, Copy, Droplets, Moon, Plus, Salad, Sun, Sunrise, Trash2, type LucideIcon } from 'lucide-react';
 import { actions, useStore } from '../../lib/store';
 import type { ActivityLevel, Client, Food, FoodEntry, MealSlot, NutritionGoal, NutritionTargets } from '../../lib/types';
 import { ACTIVITY, GOALS, adherence, bmr, dailySeries, dayEntries, suggestTargets, totals, waterFor } from '../../lib/analytics/nutrition';
@@ -7,11 +7,11 @@ import { addDays, age, fmtDay, fmtNum, fmtShortDay, fromDisplayWeight, relativeD
 import { BarChart, ChartCard, Legend } from '../../components/charts';
 import { Button, Card, Chips, Empty, Field, IconButton, NumberInput, Ring, SearchInput, Section, Segmented, Select, Sheet, Stat, Stepper, TextInput, toast, Toggle } from '../../components/ui';
 
-const MEALS: { key: MealSlot; label: string; emoji: string }[] = [
-  { key: 'breakfast', label: 'Breakfast', emoji: '🌅' },
-  { key: 'lunch', label: 'Lunch', emoji: '☀️' },
-  { key: 'dinner', label: 'Dinner', emoji: '🌙' },
-  { key: 'snack', label: 'Snacks', emoji: '🍎' },
+const MEALS: { key: MealSlot; label: string; icon: LucideIcon }[] = [
+  { key: 'breakfast', label: 'Breakfast', icon: Sunrise },
+  { key: 'lunch', label: 'Lunch', icon: Sun },
+  { key: 'dinner', label: 'Dinner', icon: Moon },
+  { key: 'snack', label: 'Snacks', icon: Apple },
 ];
 
 function defaultMeal(): MealSlot {
@@ -146,7 +146,7 @@ export default function NutritionTab({ client, autoAdd }: { client: Client; auto
               <div key={m.key} className="card flush">
                 <div className="row-between" style={{ padding: '12px 12px 8px 16px' }}>
                   <div className="row" style={{ gap: 8 }}>
-                    <span>{m.emoji}</span>
+                    <m.icon size={18} color="var(--md-on-surface-variant)" aria-hidden />
                     <span className="bold">{m.label}</span>
                     {kcal > 0 && <span className="small faint">{Math.round(kcal)} kcal</span>}
                   </div>
@@ -330,7 +330,7 @@ export function FoodSheet({ client, day, meal: initialMeal, onClose }: { client:
       }
     >
       <div className="stack">
-        <Chips value={meal} onChange={setMeal} options={MEALS.map((m) => ({ value: m.key, label: `${m.emoji} ${m.label}` }))} />
+        <Chips value={meal} onChange={setMeal} options={MEALS.map((m) => ({ value: m.key, label: <><m.icon size={16} aria-hidden /> {m.label}</> }))} />
         {picked ? (
           <Card>
             <div className="bold">{picked.name}</div>
@@ -441,7 +441,7 @@ function EntrySheet({ entry, onClose }: { entry: FoodEntry; onClose: () => void 
       }
     >
       <div className="stack">
-        <Chips value={meal} onChange={setMeal} options={MEALS.map((m) => ({ value: m.key, label: `${m.emoji} ${m.label}` }))} />
+        <Chips value={meal} onChange={setMeal} options={MEALS.map((m) => ({ value: m.key, label: <><m.icon size={16} aria-hidden /> {m.label}</> }))} />
         <div className="row-between">
           <span className="muted">Servings</span>
           <Stepper value={servings} onChange={setServings} step={0.25} min={0.25} max={20} />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Trash2 } from 'lucide-react';
+import { Trash2, TriangleAlert } from 'lucide-react';
 import { actions, useData, useSettings } from '../lib/store';
 import type { ActivityLevel, Client, Sex } from '../lib/types';
 import { ACTIVITY } from '../lib/analytics/nutrition';
@@ -168,7 +168,7 @@ export default function ClientForm() {
           </Card>
           {parqYes && (
             <div className="banner danger">
-              <span>⚠️</span>
+              <TriangleAlert size={20} />
               <span>One or more “yes” answers — obtain medical clearance before increasing training intensity.</span>
             </div>
           )}

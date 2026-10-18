@@ -82,7 +82,7 @@ export default function OverviewTab({ client, onTab, onStart }: { client: Client
 
         <div className="grid-2">
           <Stat label="Sessions" value={sessions.length} delta={<span className="faint">{thisMonth} this month</span>} />
-          <Stat label="Week streak" value={streak} unit={streak === 1 ? 'week' : 'weeks'} delta={<span className="faint">{streak >= 4 ? 'On fire 🔥' : 'Keep it going'}</span>} />
+          <Stat label="Week streak" value={streak} unit={streak === 1 ? 'week' : 'weeks'} delta={<span className="faint">{streak >= 4 ? 'On fire' : 'Keep it going'}</span>} />
           <Stat
             label="Bodyweight"
             value={w1 != null ? Math.round(toDisplayWeight(w1, units) * 10) / 10 : '–'}

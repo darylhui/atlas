@@ -49,7 +49,7 @@ export default function ProfileTab({ client }: { client: Client }) {
                   <div className="grow">
                     <div style={{ whiteSpace: 'pre-wrap' }}>{n.text}</div>
                     <div className="xs faint mt-1">
-                      {n.pinned ? '📌 Pinned · ' : ''}
+                      {n.pinned ? 'Pinned · ' : ''}
                       {fmtDay(n.date.slice(0, 10), { year: true })}
                     </div>
                   </div>

@@ -53,7 +53,7 @@ function gather(client: Client, data: AppData, days: number, units: Units): Card
   const badges = achievements(client.id, data)
     .filter((b) => b.earned)
     .slice(-4)
-    .map((b) => b.emoji);
+    .map((b) => b.title);
   return {
     name: firstName(client.name),
     period: `${fmtDay(from)} – ${fmtDay(t, { year: true })}`,
@@ -86,24 +86,24 @@ function drawCard(s: CardStats, accent: string): HTMLCanvasElement {
   c.width = W;
   c.height = H;
   const ctx = c.getContext('2d')!;
-  const font = (w: number, size: number) => `${w} ${size}px -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif`;
+  const font = (w: number, size: number) => `${w} ${size}px "Roboto Flex Variable", Roboto, system-ui, sans-serif`;
 
   const g = ctx.createLinearGradient(0, 0, W, H);
-  g.addColorStop(0, '#16181c');
-  g.addColorStop(1, '#0b0c0e');
+  g.addColorStop(0, '#1f2019');
+  g.addColorStop(1, '#12140d');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
   const glow = ctx.createRadialGradient(W * 0.85, 120, 10, W * 0.85, 120, 520);
-  glow.addColorStop(0, 'rgba(198,244,50,0.20)');
-  glow.addColorStop(1, 'rgba(198,244,50,0)');
+  glow.addColorStop(0, 'rgba(170,214,0,0.18)');
+  glow.addColorStop(1, 'rgba(170,214,0,0)');
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
 
   const P = 84;
   ctx.fillStyle = accent;
-  roundRect(ctx, P, P, 72, 72, 20);
+  roundRect(ctx, P, P, 72, 72, 22);
   ctx.fill();
-  ctx.strokeStyle = '#0b0c0e';
+  ctx.strokeStyle = '#283500';
   ctx.lineWidth = 7;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -117,16 +117,16 @@ function drawCard(s: CardStats, accent: string): HTMLCanvasElement {
   ctx.lineTo(P + 59, P + 42);
   ctx.stroke();
 
-  ctx.fillStyle = '#b9babd';
+  ctx.fillStyle = '#c6c8b8';
   ctx.font = font(600, 30);
   ctx.fillText(s.business.toUpperCase(), P + 96, P + 48);
 
-  ctx.fillStyle = '#f2f2ef';
-  ctx.font = font(800, 96);
+  ctx.fillStyle = '#e3e3d7';
+  ctx.font = font(700, 96);
   ctx.fillText(`${s.name}’s`, P, 330);
   ctx.fillStyle = accent;
   ctx.fillText('progress', P, 430);
-  ctx.fillStyle = '#85878c';
+  ctx.fillStyle = '#909284';
   ctx.font = font(500, 34);
   ctx.fillText(s.period, P, 490);
 
@@ -141,26 +141,26 @@ function drawCard(s: CardStats, accent: string): HTMLCanvasElement {
   tiles.forEach(([v, l], i) => {
     const x = P + (i % 2) * (tw + 30);
     const y = 560 + Math.floor(i / 2) * (th + 30);
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = '#292b23';
     roundRect(ctx, x, y, tw, th, 34);
     ctx.fill();
-    ctx.fillStyle = '#f2f2ef';
-    ctx.font = font(800, 78);
+    ctx.fillStyle = '#e3e3d7';
+    ctx.font = font(500, 78);
     ctx.fillText(v, x + 40, y + 108);
-    ctx.fillStyle = '#b9babd';
+    ctx.fillStyle = '#c6c8b8';
     ctx.font = font(600, 32);
     ctx.fillText(l, x + 40, y + 156);
   });
 
   let y = 560 + 2 * (th + 30) + 40;
   if (s.topLift) {
-    ctx.fillStyle = 'rgba(198,244,50,0.12)';
+    ctx.fillStyle = '#3b4d00';
     roundRect(ctx, P, y, W - P * 2, 150, 34);
     ctx.fill();
     ctx.fillStyle = accent;
     ctx.font = font(700, 30);
     ctx.fillText('BIGGEST GAIN', P + 40, y + 52);
-    ctx.fillStyle = '#f2f2ef';
+    ctx.fillStyle = '#e3e3d7';
     ctx.font = font(750, 44);
     const txt = `${s.topLift.name}  ${s.topLift.from} → ${s.topLift.to}`;
     ctx.fillText(txt.length > 34 ? `${s.topLift.name}` : txt, P + 40, y + 108);
@@ -172,15 +172,23 @@ function drawCard(s: CardStats, accent: string): HTMLCanvasElement {
     y += 190;
   }
 
-  if (s.badges.length) {
-    ctx.font = font(400, 64);
-    s.badges.forEach((b, i) => ctx.fillText(b, P + i * 96, H - 110));
-  }
-  ctx.fillStyle = '#85878c';
+  // Earned badges as a single row of tonal chips (whatever fits).
   ctx.font = font(600, 28);
-  ctx.textAlign = 'right';
-  ctx.fillText('Keep showing up 💪', W - P, H - 120);
-  ctx.textAlign = 'left';
+  let bx = P;
+  const by = y;
+  for (const b of s.badges) {
+    const bw = ctx.measureText(b).width + 48;
+    if (bx + bw > W - P) break;
+    ctx.fillStyle = '#3b4d00';
+    roundRect(ctx, bx, by, bw, 56, 16);
+    ctx.fill();
+    ctx.fillStyle = '#c2f400';
+    ctx.fillText(b, bx + 24, by + 38);
+    bx += bw + 16;
+  }
+  ctx.fillStyle = '#909284';
+  ctx.font = font(500, 28);
+  ctx.fillText('Keep showing up.', P, H - 44);
   return c;
 }
 
@@ -193,13 +201,13 @@ export function ShareProgressSheet({ open, client, onClose }: { open: boolean; c
 
   useEffect(() => {
     if (!stats) return;
-    const canvas = drawCard(stats, '#c6f432');
+    const canvas = drawCard(stats, '#aad600');
     setUrl(canvas.toDataURL('image/png'));
   }, [stats]);
 
   const share = async () => {
     if (!stats) return;
-    const canvas = drawCard(stats, '#c6f432');
+    const canvas = drawCard(stats, '#aad600');
     const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'));
     if (!blob) return;
     const res = await shareImage(blob, `${stats.name.toLowerCase()}-progress.png`, `${stats.name}’s progress`);
@@ -219,7 +227,7 @@ export function ShareProgressSheet({ open, client, onClose }: { open: boolean; c
     >
       <div className="stack">
         <Segmented value={days} onChange={setDays} options={[{ value: '30', label: '30 days' }, { value: '90', label: '90 days' }, { value: 'all', label: 'All time' }]} />
-        {url && <img src={url} alt="Progress card preview" style={{ width: '100%', maxWidth: 420, margin: '0 auto', borderRadius: 18, border: '1px solid var(--border)' }} />}
+        {url && <img src={url} alt="Progress card preview" style={{ width: '100%', maxWidth: 420, margin: '0 auto', borderRadius: 16 }} />}
         <p className="xs faint center">Send it to your client, or post it (with permission) to celebrate their wins.</p>
       </div>
     </Sheet>
