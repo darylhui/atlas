@@ -46,3 +46,33 @@ export async function requestWakeLock(): Promise<() => void> {
     return () => undefined;
   }
 }
+
+/** Single tone, e.g. for 3-2-1 countdown ticks. */
+export function tone(freq = 880, ms = 140, volume = 0.3) {
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(volume, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + ms / 1000);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + ms / 1000 + 0.02);
+}
+
+/** Spoken cue via the device's speech engine (no network needed). */
+export function speak(text: string) {
+  try {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.05;
+    synth.speak(u);
+  } catch {
+    /* speech unavailable */
+  }
+}

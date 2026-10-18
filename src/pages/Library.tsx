@@ -6,6 +6,7 @@ import type { Equipment, Exercise, ExerciseCategory, MuscleGroup, TrackingMode }
 import { CATEGORY_LABEL, EQUIPMENT_LABEL, MUSCLE_LABEL } from '../lib/seed/exercises';
 import { uid } from '../lib/util';
 import { ExerciseFilters, useExerciseFilter } from '../components/sheets';
+import { LessonLibrary } from '../components/classes';
 import { Button, Empty, Field, IconButton, ListItem, Page, Segmented, Select, Sheet, TextInput, toast } from '../components/ui';
 
 export const TRACKING_LABEL: Record<TrackingMode, string> = {
@@ -17,9 +18,10 @@ export const TRACKING_LABEL: Record<TrackingMode, string> = {
 
 export default function Library() {
   const [params, setParams] = useSearchParams();
-  const tab = (params.get('tab') as 'exercises' | 'templates') || 'templates';
+  const tab = (params.get('tab') as 'exercises' | 'templates' | 'classes') || 'templates';
   const exercises = useStore((s) => s.data.exercises);
   const templates = useStore((s) => s.data.templates);
+  const lessons = useStore((s) => s.data.lessons.length);
   const nav = useNavigate();
   const f = useExerciseFilter(exercises);
   const [creating, setCreating] = useState(false);
@@ -28,9 +30,13 @@ export default function Library() {
   return (
     <Page
       title="Library"
-      subtitle={`${templates.length} templates · ${exercises.length} exercises`}
+      subtitle={`${templates.length} PT templates · ${lessons} class lessons · ${exercises.length} exercises`}
       actions={
-        <IconButton label={tab === 'templates' ? 'New template' : 'New exercise'} className="accent" onClick={() => (tab === 'templates' ? nav('/library/template/new') : setCreating(true))}>
+        <IconButton
+          label={tab === 'templates' ? 'New template' : tab === 'classes' ? 'New class lesson' : 'New exercise'}
+          className="accent"
+          onClick={() => (tab === 'templates' ? nav('/library/template/new') : tab === 'classes' ? nav('/classes/lesson/new/edit') : setCreating(true))}
+        >
           <Plus size={20} />
         </IconButton>
       }
@@ -39,12 +45,15 @@ export default function Library() {
         value={tab}
         onChange={(v) => setParams({ tab: v }, { replace: true })}
         options={[
-          { value: 'templates', label: 'Workout templates' },
+          { value: 'templates', label: 'PT templates' },
+          { value: 'classes', label: 'Class lessons' },
           { value: 'exercises', label: 'Exercises' },
         ]}
       />
 
-      {tab === 'templates' ? (
+      {tab === 'classes' ? (
+        <LessonLibrary />
+      ) : tab === 'templates' ? (
         <div className="card flush">
           {templates.map((t) => (
             <ListItem

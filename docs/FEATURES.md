@@ -56,6 +56,32 @@ Everything below is built and works offline on iPhone and iPad. The **Roadmap** 
 ### Coach tools
 - 1RM calculator with a %1RM and rep table, plate calculator, interval timer (Tabata, EMOM, custom work/rest/rounds) and an RPE ↔ reps-in-reserve chart.
 
+## Group classes (studio lesson programmes)
+Built for coaches who also teach group classes at studios such as BFT, where classes run about 50 minutes, members rotate through stations against an on-screen timer, and programming arrives in multi-week blocks.
+
+- **Classes tab.** The next class with **Teach** and **Attendance** buttons, then this week's classes, average attendance, fill rate, class pay this month, and the next 2 weeks of the timetable. Classes also appear on the Today dashboard and the Schedule, next to PT sessions.
+- **Lesson programme library.** Lessons are grouped by **block and week** (e.g. "Block 12 · Week 3"), with filters by program and search across exercises. Program labels match the studio's class types (Strength, Hyper, Pump, H.I.R.T, Power, Strength Endurance, XTX, Cardio HIIT, Cardio Summit, Cardio U, CrewFit, Balanced), and you can type any name. Labels are colour-coded by resistance, conditioning, hybrid or mobility.
+- **Lesson builder.** Each lesson has a title, program, block, week, session, class length, focus, equipment, floor set-up and coach notes. Add blocks in any of nine formats:
+  - **Stations**: work / rest × sets per station, station-change time, laps
+  - **Circuit**: everyone moves together, with rest between moves and rounds
+  - **EMOM**, **AMRAP**, **Intervals**, **Tabata**, **Partner (YGIG)**, **For time** (count-up with a cap) and **Coach-led** (warm-up, demos, cool-down)
+  - Per block: heart-rate **zone** target, set-up time before the next block, and notes
+  - Per move: reps/time, load or RPE guidance, and regressions/progressions
+  - **Paste list**: paste a programme straight from a message or document, one move per line, and "Name — reps — load" is split into fields
+  - A live total vs the target length, and a strip showing the shape of the class
+- **Coach sheet.** A read-only view of every block, its timing and its moves for quick reference. Share it as text with co-coaches, duplicate it to make next week's lesson, and see how often it was taught and the notes from past classes.
+- **Class timer.** Full screen, made for an iPad on the floor or AirPlay-mirrored to the studio TV:
+  - A huge countdown with a colour and label for each phase: work, rest, change stations, set up, coach-led
+  - A station board showing every move, its target, load and regressions. The current move is highlighted in circuits and EMOMs.
+  - Rotation, set, round and minute counters, heart-rate zone, and a "Next:" preview. During a set-up break the board previews the next block.
+  - 3-2-1 beeps, a start tone, optional **voice cues** naming each move, and screen wake-lock
+  - Play/pause, skip and back, jump to any block, a block progress bar, and keyboard shortcuts (space and arrow keys)
+  - When the class finishes it can mark the class as taught
+- **Class sessions.** Schedule a class (or repeat it weekly for a block) with a lesson, studio, time and capacity. **Attendance** offers autocomplete of past members and PT clients, one-tap check-in and "check in all", plus spots left, member RPE and post-class notes.
+- **Studios.** Name, address, capacity and **pay per class**. Business shows classes taught, members coached and pay per studio this month. Today shows combined PT + class income.
+- **PT clients who also attend classes.** Linking a client in attendance makes the class count toward their **acute:chronic workload** and attendance heatmap, and lists it on their Training tab. Their load spike shows up in Recovery even when it came from classes.
+- Seven **example lessons** (one per class style, each ~50 min) show the structure. They're generic samples, not official studio programming: duplicate them or enter your own.
+
 ## Training analytics
 - **Estimated 1RM trend** per lift (Epley), best set, % change since first logged and PR count.
 - **Weekly volume** (tonnage) for 12 weeks.
@@ -110,5 +136,5 @@ These would move Atlas from a trainer's toolkit to a two-sided platform. They're
 8. **Program periodisation.** Multi-week programs with auto-progression rules (e.g. +2.5 kg when all reps are hit at RPE ≤ 8) and deloads triggered by readiness or ACWR.
 9. **Barcode scanning and a large food database** (Open Food Facts or a commercial API) for faster food logging.
 10. **AI coaching assistant.** Weekly client summaries, program suggestions, and drafted check-in replies, built on the analytics already computed here.
-11. **Group classes and leaderboards** for bootcamp-style sessions.
+11. **Class leaderboards and member accounts.** Members log test-week results and see their own history after group classes. Bookings sync with the studio's booking system.
 12. **Shareable web reports** a client can open from a link, with no app install.

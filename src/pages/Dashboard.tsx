@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, CalendarDays, CircleAlert, Dumbbell, Settings as Cog, Trophy, Users } from 'lucide-react';
+import { Activity, CalendarDays, CircleAlert, Dumbbell, Settings as Cog, Timer, Trophy } from 'lucide-react';
 import { useStore } from '../lib/store';
 import type { Appointment } from '../lib/types';
 import { allAlerts, monthStart, revenueBetween } from '../lib/analytics/insights';
@@ -8,6 +8,8 @@ import { latestCheckIn, readinessFor, readinessZone } from '../lib/analytics/rec
 import { completed, prTimeline } from '../lib/analytics/strength';
 import { addDays, dayKey, firstName, fmtDay, fmtNum, fmtWeight, mean, money, today, weekStart } from '../lib/util';
 import { AppointmentActions, AppointmentRow } from '../components/appointments';
+import { ClassRow } from '../components/classes';
+import { classPay, presentCount } from '../lib/classes';
 import { Avatar, Card, Empty, IconButton, Page, Section, Stat, ZonePill } from '../components/ui';
 import { Sparkline } from '../components/charts';
 
@@ -25,9 +27,15 @@ export default function Dashboard() {
   const units = data.settings.units;
 
   const todays = useMemo(
-    () => data.appointments.filter((a) => dayKey(new Date(a.start)) === t).sort((a, b) => a.start.localeCompare(b.start)),
-    [data.appointments, t],
+    () =>
+      [
+        ...data.appointments.filter((a) => dayKey(new Date(a.start)) === t).map((a) => ({ kind: 'appt' as const, start: a.start, a })),
+        ...data.groupClasses.filter((g) => dayKey(new Date(g.start)) === t).map((g) => ({ kind: 'class' as const, start: g.start, g })),
+      ].sort((x, y) => x.start.localeCompare(y.start)),
+    [data.appointments, data.groupClasses, t],
   );
+  const weekClasses = data.groupClasses.filter((g) => g.status !== 'cancelled' && dayKey(new Date(g.start)) >= weekStart(t) && dayKey(new Date(g.start)) < addDays(weekStart(t), 7));
+  const coached = weekClasses.filter((g) => g.status === 'completed').reduce((a, g) => a + presentCount(g), 0);
   const alerts = useMemo(() => allAlerts(data), [data]);
   const active = data.clients.filter((c) => c.status === 'active');
   const clientById = new Map(data.clients.map((c) => [c.id, c]));
@@ -35,6 +43,7 @@ export default function Dashboard() {
   const weekSessions = completed(data.sessions).filter((s) => s.date >= weekStart(t)).length;
   const lastWeekSessions = completed(data.sessions).filter((s) => s.date >= addDays(weekStart(t), -7) && s.date < weekStart(t)).length;
   const revenue = revenueBetween(data, monthStart(t), t);
+  const pay = classPay(data.groupClasses, data.studios, monthStart(t), t);
 
   const readinessBoard = useMemo(
     () =>
@@ -74,10 +83,14 @@ export default function Dashboard() {
       }
     >
       <div className="grid-4">
-        <Stat label="Sessions this week" icon={<Dumbbell size={14} />} value={weekSessions} delta={<span className="faint">{lastWeekSessions} last week</span>} />
-        <Stat label="Active clients" icon={<Users size={14} />} value={active.length} />
-        <Stat label="Avg readiness" icon={<Activity size={14} />} value={scored.length ? Math.round(mean(scored)) : '–'} delta={<span className="faint">{scored.length} checked in</span>} />
-        <Stat label="Revenue this month" value={money(revenue, data.settings.currency)} />
+        <Stat label="PT sessions this week" icon={<Dumbbell size={14} />} value={weekSessions} delta={<span className="faint">{lastWeekSessions} last week</span>} />
+        <Stat label="Classes this week" icon={<Timer size={14} />} value={weekClasses.length} delta={<span className="faint">{coached} members coached so far</span>} />
+        <Stat label="Avg readiness" icon={<Activity size={14} />} value={scored.length ? Math.round(mean(scored)) : '–'} delta={<span className="faint">{scored.length} of {active.length} clients checked in</span>} />
+        <Stat
+          label="Income this month"
+          value={money(revenue + pay, data.settings.currency)}
+          delta={pay > 0 ? <span className="faint">{money(revenue, data.settings.currency)} PT · {money(pay, data.settings.currency)} classes</span> : undefined}
+        />
       </div>
 
       <div className="cols">
@@ -90,9 +103,9 @@ export default function Dashboard() {
           }
         >
           <div className="card flush">
-            {todays.map((a) => (
-              <AppointmentRow key={a.id} a={a} onClick={() => setAppt(a)} />
-            ))}
+            {todays.map((x) =>
+              x.kind === 'appt' ? <AppointmentRow key={x.a.id} a={x.a} onClick={() => setAppt(x.a)} /> : <ClassRow key={x.g.id} g={x.g} onClick={() => nav(`/classes/session/${x.g.id}`)} />,
+            )}
             {!todays.length && (
               <Empty icon={<CalendarDays />} title="Nothing booked today">
                 Tap + to book a session or start a workout.

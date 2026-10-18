@@ -2,6 +2,7 @@ import type { AppData, Client, DayKey } from '../types';
 import { addDays, daysBetween, parseDay, today } from '../util';
 import { activePackage, sessionsRemaining } from '../store';
 import { goalProgress } from './engagement';
+import { classLoadsFor } from '../classes';
 import { latestCheckIn, loadStatus, readinessFor, readinessZone, type Zone } from './recovery';
 import { daysSinceLastSession } from './strength';
 
@@ -40,7 +41,7 @@ export function clientAlerts(c: Client, data: AppData): Alert[] {
     add({ kind: 'checkin', severity: 'warning', title: ci ? `No check-in for ${daysBetween(ci.date, t)} days` : 'No check-ins yet', detail: 'Send a reminder to complete the daily readiness check-in.' });
   }
 
-  const load = loadStatus(data.sessions, c.id);
+  const load = loadStatus(data.sessions, c.id, today(), classLoadsFor(data.groupClasses, c.id));
   if (load.ratio != null && load.ratio > 1.3 && load.chronic > 0) {
     add({
       kind: 'load',

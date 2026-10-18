@@ -73,7 +73,7 @@ await session('phone', devices['iPhone 13'], async (page, shot) => {
   await shot('09-summary', true);
 
   await go(page, '#/schedule');
-  await page.getByText('Booked').waitFor();
+  await page.getByText('PT · classes').waitFor();
   await shot('10-schedule');
   await go(page, '#/library');
   await shot('11-library');

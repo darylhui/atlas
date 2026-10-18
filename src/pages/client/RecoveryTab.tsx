@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity } from 'lucide-react';
 import { useStore } from '../../lib/store';
+import { classLoadsFor } from '../../lib/classes';
 import type { Client } from '../../lib/types';
 import { MUSCLE_LABEL } from '../../lib/seed/exercises';
 import { baseline, latestCheckIn, loadSeries, loadStatus, readiness, readinessFor, readinessZone, sorenessFrequency } from '../../lib/analytics/recovery';
@@ -22,8 +23,10 @@ export default function RecoveryTab({ client }: { client: Client }) {
   const latest = latestCheckIn(data.checkIns, client.id);
   const breakdown = latest ? readiness(latest, baseline(data.checkIns, client.id, latest.date)) : undefined;
   const zone = breakdown ? readinessZone(breakdown.score) : undefined;
-  const load = useMemo(() => loadStatus(data.sessions, client.id), [data.sessions, client.id]);
-  const series = useMemo(() => loadSeries(data.sessions, client.id, 42), [data.sessions, client.id]);
+  const classLoads = useMemo(() => classLoadsFor(data.groupClasses, client.id), [data.groupClasses, client.id]);
+  const load = useMemo(() => loadStatus(data.sessions, client.id, today(), classLoads), [data.sessions, client.id, classLoads]);
+  const series = useMemo(() => loadSeries(data.sessions, client.id, 42, today(), classLoads), [data.sessions, client.id, classLoads]);
+  const recentClasses = classLoads.filter((c) => c.date >= addDays(t, -27)).length;
   const sore = useMemo(() => sorenessFrequency(data.checkIns, client.id, from30), [data.checkIns, client.id, from30]);
   const readinessPts = recent.map((c) => ({ x: c.date, y: readinessFor(data.checkIns, c) }));
   const hrv = recent.filter((c) => c.hrv != null).map((c) => ({ x: c.date, y: c.hrv! }));
@@ -105,7 +108,10 @@ export default function RecoveryTab({ client }: { client: Client }) {
               <div className="bold tabular">{load.monotony != null ? load.monotony.toFixed(1) : '–'}</div>
             </div>
           </div>
-          <div className="xs faint mt-2">Load = session RPE × minutes (AU). Sweet spot 0.8–1.3; above 1.5 is a spike. Monotony above 2 means too little variation.</div>
+          <div className="xs faint mt-2">
+            Load = session RPE × minutes (AU)
+            {recentClasses ? `, including ${recentClasses} group class${recentClasses > 1 ? 'es' : ''} in the last 4 weeks` : ''}. Sweet spot 0.8–1.3; above 1.5 is a spike. Monotony above 2 means too little variation.
+          </div>
         </Card>
       </div>
 

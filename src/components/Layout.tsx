@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { CalendarDays, ClipboardList, Dumbbell, House, Menu, Plus, Users } from 'lucide-react';
+import { CalendarDays, ClipboardList, Dumbbell, House, Menu, Plus, Timer, Users } from 'lucide-react';
 import { useData } from '../lib/store';
 import { firstName } from '../lib/util';
 import { QuickActions } from './sheets';
@@ -20,6 +20,7 @@ export function Logo({ size = 28 }: { size?: number }) {
 const TABS = [
   { to: '/', label: 'Today', icon: House, end: true },
   { to: '/clients', label: 'Clients', icon: Users },
+  { to: '/classes', label: 'Classes', icon: Timer },
   { to: '/schedule', label: 'Schedule', icon: CalendarDays },
   { to: '/library', label: 'Library', icon: ClipboardList },
   { to: '/more', label: 'More', icon: Menu },
@@ -84,7 +85,7 @@ export function Layout() {
           <Plus size={26} strokeWidth={2.6} />
         </button>
         {tab(TABS[2])}
-        {tab(TABS[4])}
+        {tab(TABS[5])}
       </nav>
 
       <QuickActions open={quick} onClose={() => setQuick(false)} />

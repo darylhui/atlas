@@ -2,13 +2,18 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useStore } from '../lib/store';
-import type { Appointment } from '../lib/types';
+import type { Appointment, GroupClass } from '../lib/types';
 import { addDays, dayKey, dowShort, fmtDay, parseDay, relativeDay, today, weekStart } from '../lib/util';
 import { AppointmentActions, AppointmentForm, AppointmentRow } from '../components/appointments';
+import { ClassForm, ClassRow } from '../components/classes';
+import { useNavigate } from 'react-router-dom';
 import { Empty, IconButton, Page, Section, Stat } from '../components/ui';
 
 export default function Schedule() {
   const appts = useStore((s) => s.data.appointments);
+  const classes = useStore((s) => s.data.groupClasses);
+  const nav = useNavigate();
+  const [newClass, setNewClass] = useState(false);
   const [params, setParams] = useSearchParams();
   const t = today();
   const [day, setDay] = useState(t);
@@ -29,11 +34,25 @@ export default function Schedule() {
     return m;
   }, [appts]);
 
+  const classesByDay = useMemo(() => {
+    const m = new Map<string, GroupClass[]>();
+    for (const g of classes) {
+      const k = dayKey(new Date(g.start));
+      m.set(k, [...(m.get(k) ?? []), g]);
+    }
+    return m;
+  }, [classes]);
+
   const days = Array.from({ length: 7 }, (_, i) => addDays(week, i));
   const list = byDay.get(day) ?? [];
+  const items = [
+    ...list.map((a) => ({ kind: 'appt' as const, start: a.start, a })),
+    ...(classesByDay.get(day) ?? []).map((g) => ({ kind: 'class' as const, start: g.start, g })),
+  ].sort((x, y) => x.start.localeCompare(y.start));
+  const weekClasses = days.flatMap((d) => classesByDay.get(d) ?? []).filter((g) => g.status !== 'cancelled');
   const weekAppts = days.flatMap((d) => byDay.get(d) ?? []);
   const booked = weekAppts.filter((a) => a.status !== 'cancelled');
-  const hours = booked.reduce((a, x) => a + x.durationMin, 0) / 60;
+  const hours = (booked.reduce((a, x) => a + x.durationMin, 0) + weekClasses.reduce((a, g) => a + g.durationMin, 0)) / 60;
   const noShows = weekAppts.filter((a) => a.status === 'no_show').length;
   const upcoming = useMemo(
     () => appts.filter((a) => a.status === 'scheduled' && dayKey(new Date(a.start)) > day).sort((a, b) => a.start.localeCompare(b.start)).slice(0, 5),
@@ -79,7 +98,7 @@ export default function Schedule() {
         </div>
         <div className="day-strip">
           {days.map((d) => {
-            const n = (byDay.get(d) ?? []).filter((a) => a.status !== 'cancelled').length;
+            const n = (byDay.get(d) ?? []).filter((a) => a.status !== 'cancelled').length + (classesByDay.get(d) ?? []).filter((g) => g.status !== 'cancelled').length;
             return (
               <button key={d} className={`day-cell${d === day ? ' on' : ''}${d === t ? ' today' : ''}`} onClick={() => setDay(d)}>
                 {dowShort(d)}
@@ -96,17 +115,25 @@ export default function Schedule() {
       </div>
 
       <div className="grid-3">
-        <Stat label="Booked" value={booked.length} delta={<span className="faint">this week</span>} />
+        <Stat label="PT · classes" value={`${booked.length} · ${weekClasses.length}`} delta={<span className="faint">this week</span>} />
         <Stat label="Hours" value={Math.round(hours * 10) / 10} delta={<span className="faint">coaching</span>} />
         <Stat label="No-shows" value={noShows} delta={<span className="faint">this week</span>} />
       </div>
 
-      <Section title={relativeDay(day) === fmtDay(day) ? fmtDay(day, { weekday: true }) : `${relativeDay(day)} · ${fmtDay(day)}`} action={<button className="section-link" onClick={() => setParams({ new: '1' })}>+ Book</button>}>
+      <Section
+        title={relativeDay(day) === fmtDay(day) ? fmtDay(day, { weekday: true }) : `${relativeDay(day)} · ${fmtDay(day)}`}
+        action={
+          <span className="row" style={{ gap: 14 }}>
+            <button className="section-link" onClick={() => setNewClass(true)}>+ Class</button>
+            <button className="section-link" onClick={() => setParams({ new: '1' })}>+ PT</button>
+          </span>
+        }
+      >
         <div className="card flush">
-          {list.map((a) => (
-            <AppointmentRow key={a.id} a={a} onClick={() => setOpen(a)} />
-          ))}
-          {!list.length && <Empty icon={<CalendarDays />} title="Free day">Nothing booked.</Empty>}
+          {items.map((x) =>
+            x.kind === 'appt' ? <AppointmentRow key={x.a.id} a={x.a} onClick={() => setOpen(x.a)} /> : <ClassRow key={x.g.id} g={x.g} onClick={() => nav(`/classes/session/${x.g.id}`)} />,
+          )}
+          {!items.length && <Empty icon={<CalendarDays />} title="Free day">Nothing booked.</Empty>}
         </div>
       </Section>
 
@@ -127,6 +154,7 @@ export default function Schedule() {
 
       <AppointmentActions appt={open} onClose={() => setOpen(undefined)} />
       {creating && <AppointmentForm open onClose={closeNew} day={day} clientId={presetClient} />}
+      {newClass && <ClassForm open day={day} onClose={() => setNewClass(false)} />}
     </Page>
   );
 }

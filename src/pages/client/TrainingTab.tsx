@@ -5,7 +5,8 @@ import { useStore } from '../../lib/store';
 import type { Client, MuscleGroup } from '../../lib/types';
 import { MUSCLE_LABEL } from '../../lib/seed/exercises';
 import { completed, exerciseHistory, prTimeline, sessionSetCount, sessionVolume, setsPerMuscle, topExercises, weeklyTotals } from '../../lib/analytics/strength';
-import { addDays, compact, fmtDay, fmtNum, fmtShortDay, fmtWeight, relativeDay, round, toDisplayWeight, today, weightUnit } from '../../lib/util';
+import { addDays, compact, dayKey, fmtDay, fmtNum, fmtShortDay, fmtWeight, relativeDay, round, toDisplayWeight, today, weightUnit } from '../../lib/util';
+import { classTitle } from '../../lib/classes';
 import { BarChart, ChartCard, HBars, Heatmap, LineChart } from '../../components/charts';
 import { Chips, Empty, ListItem, Section, Segmented, Stat } from '../../components/ui';
 
@@ -33,11 +34,22 @@ export default function TrainingTab({ client }: { client: Client }) {
       .map(([m, v]) => ({ label: MUSCLE_LABEL[m], value: v / scale }))
       .sort((a, b) => b.value - a.value);
   }, [data.sessions, exMap, range, t, client.id]);
+  const groupClasses = useMemo(
+    () =>
+      data.groupClasses
+        .filter((g) => g.status === 'completed' && g.attendees.some((a) => a.clientId === client.id && a.present))
+        .sort((a, b) => b.start.localeCompare(a.start)),
+    [data.groupClasses, client.id],
+  );
   const attendance = useMemo(() => {
     const m = new Map<string, number>();
     for (const s of sessions) m.set(s.date, (m.get(s.date) ?? 0) + 1);
+    for (const g of groupClasses) {
+      const k = dayKey(new Date(g.start));
+      m.set(k, (m.get(k) ?? 0) + 1);
+    }
     return m;
-  }, [sessions]);
+  }, [sessions, groupClasses]);
 
   if (!sessions.length)
     return (
@@ -112,7 +124,7 @@ export default function TrainingTab({ client }: { client: Client }) {
         </ChartCard>
       </div>
 
-      <ChartCard title="Attendance" subtitle={`Last 12 weeks · ${weeks.reduce((a, w) => a + w.sessions, 0)} sessions`}>
+      <ChartCard title="Attendance" subtitle={`Last 12 weeks · ${weeks.reduce((a, w) => a + w.sessions, 0)} PT sessions${groupClasses.length ? ' + group classes' : ''}`}>
         <Heatmap days={attendance} label={(k, v) => `${fmtDay(k)}: ${v ? `${v} session${v > 1 ? 's' : ''}` : 'rest'}`} />
         <div className="row-between xs faint mt-1">
           <span>12 weeks ago</span>
@@ -123,6 +135,21 @@ export default function TrainingTab({ client }: { client: Client }) {
           <span>This week</span>
         </div>
       </ChartCard>
+
+      {groupClasses.length > 0 && (
+        <Section title={`Group classes · ${groupClasses.length}`}>
+          <div className="card flush">
+            {groupClasses.slice(0, 8).map((g) => (
+              <ListItem
+                key={g.id}
+                title={`${g.programType} · ${classTitle(g, data.lessons)}`}
+                subtitle={`${relativeDay(dayKey(new Date(g.start)))} · ${g.durationMin} min · counts toward training load`}
+                onClick={() => nav(`/classes/session/${g.id}`)}
+              />
+            ))}
+          </div>
+        </Section>
+      )}
 
       <Section title="Session history" action={sessions.length > 12 ? <button className="section-link" onClick={() => setShowAll((v) => !v)}>{showAll ? 'Show less' : `All ${sessions.length}`}</button> : undefined}>
         <div className="card flush">

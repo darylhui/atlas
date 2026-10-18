@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { CheckIn, Goal, WorkoutSession } from '../types';
+import type { CheckIn, ClassSegment, Goal, WorkoutSession } from '../types';
+import { buildTimeline, classLoadsFor, lessonSeconds, newSegment, segmentIntervals, segmentSeconds } from '../classes';
+import { EXAMPLE_LESSONS } from '../seed/lessons';
 import { addDays, today } from '../util';
 import { buildDemoData } from '../seed/demo';
 import { achievements, goalProgress } from './engagement';
@@ -194,5 +196,51 @@ describe('engagement', () => {
       expect(p.pct).toBeGreaterThan(0);
       expect(p.pct).toBeLessThan(1);
     }
+  });
+});
+
+describe('group classes', () => {
+  const move = (name: string) => ({ id: name, name });
+  const base = (over: Partial<ClassSegment>): ClassSegment => ({ ...newSegment('stations'), ...over });
+
+  it('expands station rotations with sets, rests and station changes', () => {
+    const s = base({ format: 'stations', workSec: 40, restSec: 20, sets: 2, transitionSec: 30, rounds: 1, moves: [move('A'), move('B'), move('C')] });
+    const t = segmentIntervals(s, 0);
+    // Per station: work, rest, work. Station changes between stations only.
+    expect(t.map((x) => x.phase).join(',')).toBe('work,rest,work,change,work,rest,work,change,work,rest,work');
+    expect(segmentSeconds(s)).toBe(3 * (40 + 20 + 40) + 2 * 30);
+    expect(t[0].rounds).toBe(3);
+  });
+
+  it('cycles moves through EMOM minutes and partner rounds', () => {
+    const emom = segmentIntervals(base({ format: 'emom', workSec: 60, rounds: 5, moves: [move('A'), move('B')] }), 0);
+    expect(emom.map((x) => x.move)).toEqual([0, 1, 0, 1, 0]);
+    const ygig = segmentIntervals(base({ format: 'partner', workSec: 30, rounds: 2, moves: [move('Row')] }), 0);
+    expect(ygig.map((x) => x.label)).toEqual(['Partner A', 'Partner B', 'Partner A', 'Partner B']);
+  });
+
+  it('adds breaks between blocks but not after the last', () => {
+    const lesson = { segments: [base({ format: 'coach', durationSec: 300, breakSec: 60 }), base({ format: 'amrap', durationSec: 600, breakSec: 60 })] };
+    const t = buildTimeline(lesson);
+    expect(t.map((x) => x.phase)).toEqual(['coach', 'break', 'work']);
+    expect(lessonSeconds(lesson)).toBe(960);
+  });
+
+  it('ships example lessons that each run about 50 minutes', () => {
+    for (const l of EXAMPLE_LESSONS) {
+      const min = lessonSeconds(l) / 60;
+      expect(min, l.title).toBeGreaterThan(45);
+      expect(min, l.title).toBeLessThan(55);
+    }
+  });
+
+  it('counts attended classes toward a linked client’s training load', () => {
+    const data = buildDemoData();
+    const mei = data.clients.find((c) => c.name === 'Mei Lin Wong')!;
+    const extra = classLoadsFor(data.groupClasses, mei.id);
+    expect(extra.length).toBeGreaterThan(0);
+    const withClasses = loadStatus(data.sessions, mei.id, today(), extra);
+    const without = loadStatus(data.sessions, mei.id);
+    expect(withClasses.acute).toBeGreaterThan(without.acute);
   });
 });
