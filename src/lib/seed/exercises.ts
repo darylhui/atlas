@@ -1,0 +1,176 @@
+import type { Equipment, Exercise, ExerciseCategory, MuscleGroup, TrackingMode } from '../types';
+
+type Row = [id: string, name: string, primary: MuscleGroup, secondary: MuscleGroup[], equipment: Equipment, cues?: string, category?: ExerciseCategory, tracking?: TrackingMode];
+
+const rows: Row[] = [
+  // Legs
+  ['back-squat', 'Back Squat', 'quads', ['glutes', 'adductors', 'core'], 'barbell', 'Brace, knees track toes, hips and chest rise together.'],
+  ['front-squat', 'Front Squat', 'quads', ['glutes', 'core'], 'barbell', 'Elbows high, upright torso, sit between the heels.'],
+  ['goblet-squat', 'Goblet Squat', 'quads', ['glutes', 'core'], 'dumbbell', 'Hold bell at chest, elbows inside knees at the bottom.'],
+  ['hack-squat', 'Hack Squat', 'quads', ['glutes'], 'machine'],
+  ['leg-press', 'Leg Press', 'quads', ['glutes', 'adductors'], 'machine', 'Full foot contact, lower until hips start to tuck.'],
+  ['bulgarian-split-squat', 'Bulgarian Split Squat', 'quads', ['glutes', 'adductors'], 'dumbbell', 'Long stance, front shin near vertical, control the descent.'],
+  ['walking-lunge', 'Walking Lunge', 'quads', ['glutes'], 'dumbbell'],
+  ['reverse-lunge', 'Reverse Lunge', 'glutes', ['quads'], 'dumbbell'],
+  ['step-up', 'Step-Up', 'quads', ['glutes'], 'dumbbell'],
+  ['leg-extension', 'Leg Extension', 'quads', [], 'machine'],
+  ['deadlift', 'Deadlift', 'hamstrings', ['glutes', 'back', 'forearms'], 'barbell', 'Bar over midfoot, lats tight, push the floor away.'],
+  ['romanian-deadlift', 'Romanian Deadlift', 'hamstrings', ['glutes', 'back'], 'barbell', 'Soft knees, hinge until hamstrings load, bar close.'],
+  ['db-romanian-deadlift', 'Dumbbell RDL', 'hamstrings', ['glutes'], 'dumbbell'],
+  ['trap-bar-deadlift', 'Trap Bar Deadlift', 'quads', ['glutes', 'hamstrings', 'back'], 'barbell'],
+  ['hip-thrust', 'Barbell Hip Thrust', 'glutes', ['hamstrings'], 'barbell', 'Chin tucked, ribs down, full lockout with glute squeeze.'],
+  ['glute-bridge', 'Glute Bridge', 'glutes', ['hamstrings'], 'bodyweight', undefined, 'strength', 'reps'],
+  ['lying-leg-curl', 'Lying Leg Curl', 'hamstrings', [], 'machine'],
+  ['seated-leg-curl', 'Seated Leg Curl', 'hamstrings', [], 'machine'],
+  ['nordic-curl', 'Nordic Hamstring Curl', 'hamstrings', [], 'bodyweight', 'Slow eccentric, hips extended throughout.', 'strength', 'reps'],
+  ['kb-swing', 'Kettlebell Swing', 'glutes', ['hamstrings', 'core'], 'kettlebell', 'Hike, snap the hips, float the bell to chest height.'],
+  ['cable-pull-through', 'Cable Pull-Through', 'glutes', ['hamstrings'], 'cable'],
+  ['hip-abduction', 'Hip Abduction', 'glutes', [], 'machine'],
+  ['hip-adduction', 'Hip Adduction', 'adductors', [], 'machine'],
+  ['standing-calf-raise', 'Standing Calf Raise', 'calves', [], 'machine', 'Full stretch at the bottom, pause at the top.'],
+  ['seated-calf-raise', 'Seated Calf Raise', 'calves', [], 'machine'],
+
+  // Push
+  ['bench-press', 'Bench Press', 'chest', ['triceps', 'shoulders'], 'barbell', 'Shoulder blades pinned, feet planted, touch low chest.'],
+  ['incline-bench-press', 'Incline Bench Press', 'chest', ['shoulders', 'triceps'], 'barbell'],
+  ['db-bench-press', 'Dumbbell Bench Press', 'chest', ['triceps', 'shoulders'], 'dumbbell'],
+  ['incline-db-press', 'Incline Dumbbell Press', 'chest', ['shoulders', 'triceps'], 'dumbbell'],
+  ['close-grip-bench', 'Close-Grip Bench Press', 'triceps', ['chest', 'shoulders'], 'barbell'],
+  ['machine-chest-press', 'Machine Chest Press', 'chest', ['triceps'], 'machine'],
+  ['cable-fly', 'Cable Fly', 'chest', [], 'cable'],
+  ['pec-deck', 'Pec Deck', 'chest', [], 'machine'],
+  ['push-up', 'Push-Up', 'chest', ['triceps', 'core'], 'bodyweight', 'Rigid plank, elbows ~45°, chest to fist height.', 'strength', 'reps'],
+  ['dip', 'Dip', 'triceps', ['chest', 'shoulders'], 'bodyweight', undefined, 'strength', 'reps'],
+  ['overhead-press', 'Overhead Press', 'shoulders', ['triceps', 'core'], 'barbell', 'Squeeze glutes, press in a straight line, head through.'],
+  ['seated-db-press', 'Seated Dumbbell Press', 'shoulders', ['triceps'], 'dumbbell'],
+  ['arnold-press', 'Arnold Press', 'shoulders', ['triceps'], 'dumbbell'],
+  ['landmine-press', 'Landmine Press', 'shoulders', ['chest', 'core'], 'barbell'],
+  ['lateral-raise', 'Lateral Raise', 'shoulders', [], 'dumbbell', 'Lead with elbows, stop at shoulder height.'],
+  ['cable-lateral-raise', 'Cable Lateral Raise', 'shoulders', [], 'cable'],
+  ['rear-delt-fly', 'Rear Delt Fly', 'shoulders', ['back'], 'dumbbell'],
+  ['face-pull', 'Face Pull', 'shoulders', ['back'], 'cable', 'Pull to forehead, thumbs back, external rotation at the end.'],
+  ['triceps-pushdown', 'Triceps Pushdown', 'triceps', [], 'cable'],
+  ['overhead-triceps-extension', 'Overhead Triceps Extension', 'triceps', [], 'cable'],
+  ['skull-crusher', 'Skull Crusher', 'triceps', [], 'barbell'],
+
+  // Pull
+  ['pull-up', 'Pull-Up', 'back', ['biceps', 'forearms'], 'bodyweight', 'Dead hang start, drive elbows to ribs, chin over bar.', 'strength', 'reps'],
+  ['chin-up', 'Chin-Up', 'back', ['biceps'], 'bodyweight', undefined, 'strength', 'reps'],
+  ['weighted-pull-up', 'Weighted Pull-Up', 'back', ['biceps', 'forearms'], 'other'],
+  ['lat-pulldown', 'Lat Pulldown', 'back', ['biceps'], 'cable', 'Slight lean back, pull bar to upper chest.'],
+  ['barbell-row', 'Barbell Row', 'back', ['biceps', 'forearms'], 'barbell', 'Hinge to ~45°, row to lower ribs, no jerking.'],
+  ['db-row', 'Single-Arm Dumbbell Row', 'back', ['biceps'], 'dumbbell'],
+  ['seated-cable-row', 'Seated Cable Row', 'back', ['biceps'], 'cable'],
+  ['chest-supported-row', 'Chest-Supported Row', 'back', ['biceps', 'shoulders'], 'dumbbell'],
+  ['t-bar-row', 'T-Bar Row', 'back', ['biceps'], 'barbell'],
+  ['inverted-row', 'Inverted Row', 'back', ['biceps'], 'bodyweight', undefined, 'strength', 'reps'],
+  ['straight-arm-pulldown', 'Straight-Arm Pulldown', 'back', [], 'cable'],
+  ['shrug', 'Shrug', 'back', ['forearms'], 'dumbbell'],
+  ['back-extension', 'Back Extension', 'back', ['glutes', 'hamstrings'], 'bodyweight', undefined, 'strength', 'reps'],
+  ['barbell-curl', 'Barbell Curl', 'biceps', ['forearms'], 'barbell'],
+  ['db-curl', 'Dumbbell Curl', 'biceps', ['forearms'], 'dumbbell'],
+  ['hammer-curl', 'Hammer Curl', 'biceps', ['forearms'], 'dumbbell'],
+  ['preacher-curl', 'Preacher Curl', 'biceps', [], 'machine'],
+  ['cable-curl', 'Cable Curl', 'biceps', [], 'cable'],
+  ['farmers-carry', "Farmer's Carry", 'forearms', ['core', 'back'], 'dumbbell', 'Tall posture, short quick steps.', 'strength', 'distance_time'],
+  ['wrist-curl', 'Wrist Curl', 'forearms', [], 'dumbbell'],
+
+  // Core
+  ['plank', 'Plank', 'core', [], 'bodyweight', 'Squeeze glutes, ribs down, breathe.', 'strength', 'time'],
+  ['side-plank', 'Side Plank', 'core', [], 'bodyweight', undefined, 'strength', 'time'],
+  ['dead-bug', 'Dead Bug', 'core', [], 'bodyweight', 'Low back stays glued to the floor.', 'strength', 'reps'],
+  ['hanging-leg-raise', 'Hanging Leg Raise', 'core', [], 'bodyweight', undefined, 'strength', 'reps'],
+  ['cable-crunch', 'Cable Crunch', 'core', [], 'cable'],
+  ['ab-wheel', 'Ab Wheel Rollout', 'core', ['shoulders'], 'other', undefined, 'strength', 'reps'],
+  ['pallof-press', 'Pallof Press', 'core', [], 'cable'],
+  ['russian-twist', 'Russian Twist', 'core', [], 'other', undefined, 'strength', 'reps'],
+
+  // Full body / power
+  ['power-clean', 'Power Clean', 'full_body', ['hamstrings', 'glutes', 'back'], 'barbell'],
+  ['thruster', 'Thruster', 'full_body', ['quads', 'shoulders'], 'dumbbell'],
+  ['burpee', 'Burpee', 'full_body', ['chest', 'quads'], 'bodyweight', undefined, 'plyometric', 'reps'],
+  ['box-jump', 'Box Jump', 'quads', ['glutes', 'calves'], 'bodyweight', 'Land soft and quiet, step down.', 'plyometric', 'reps'],
+  ['broad-jump', 'Broad Jump', 'glutes', ['quads', 'hamstrings'], 'bodyweight', undefined, 'plyometric', 'reps'],
+  ['med-ball-slam', 'Medicine Ball Slam', 'full_body', ['core', 'shoulders'], 'other', undefined, 'plyometric', 'reps'],
+  ['sled-push', 'Sled Push', 'quads', ['glutes', 'calves'], 'other', undefined, 'strength', 'distance_time'],
+
+  // Cardio
+  ['treadmill-run', 'Treadmill Run', 'cardio', [], 'machine', undefined, 'cardio', 'distance_time'],
+  ['rower', 'Rowing Machine', 'cardio', ['back'], 'machine', 'Legs, body, arms — arms, body, legs.', 'cardio', 'distance_time'],
+  ['assault-bike', 'Air Bike', 'cardio', [], 'machine', undefined, 'cardio', 'time'],
+  ['ski-erg', 'Ski Erg', 'cardio', ['back', 'core'], 'machine', undefined, 'cardio', 'distance_time'],
+  ['stairmaster', 'Stair Climber', 'cardio', ['glutes'], 'machine', undefined, 'cardio', 'time'],
+  ['jump-rope', 'Jump Rope', 'cardio', ['calves'], 'other', undefined, 'cardio', 'time'],
+
+  // Mobility
+  ['worlds-greatest-stretch', "World's Greatest Stretch", 'full_body', [], 'bodyweight', undefined, 'mobility', 'reps'],
+  ['hip-90-90', '90/90 Hip Switch', 'glutes', ['adductors'], 'bodyweight', undefined, 'mobility', 'reps'],
+  ['couch-stretch', 'Couch Stretch', 'quads', [], 'bodyweight', undefined, 'mobility', 'time'],
+  ['thoracic-rotation', 'Thoracic Rotation', 'back', [], 'bodyweight', undefined, 'mobility', 'reps'],
+  ['cat-cow', 'Cat-Cow', 'back', ['core'], 'bodyweight', undefined, 'mobility', 'reps'],
+  ['band-pull-apart', 'Band Pull-Apart', 'shoulders', ['back'], 'band', undefined, 'mobility', 'reps'],
+  ['foam-roll', 'Foam Rolling', 'full_body', [], 'other', undefined, 'mobility', 'time'],
+];
+
+export const EXERCISES: Exercise[] = rows.map(([id, name, primary, secondary, equipment, cues, category = 'strength', tracking = 'weight_reps']) => ({
+  id,
+  name,
+  primary,
+  secondary,
+  equipment,
+  cues,
+  category,
+  tracking,
+}));
+
+export const MUSCLE_LABEL: Record<MuscleGroup, string> = {
+  chest: 'Chest',
+  back: 'Back',
+  shoulders: 'Shoulders',
+  biceps: 'Biceps',
+  triceps: 'Triceps',
+  forearms: 'Forearms',
+  core: 'Core',
+  glutes: 'Glutes',
+  quads: 'Quads',
+  hamstrings: 'Hamstrings',
+  calves: 'Calves',
+  adductors: 'Adductors',
+  neck: 'Neck',
+  full_body: 'Full body',
+  cardio: 'Cardio',
+};
+
+export const SORE_AREAS: MuscleGroup[] = [
+  'neck',
+  'shoulders',
+  'chest',
+  'back',
+  'biceps',
+  'triceps',
+  'forearms',
+  'core',
+  'glutes',
+  'quads',
+  'hamstrings',
+  'adductors',
+  'calves',
+];
+
+export const EQUIPMENT_LABEL: Record<Equipment, string> = {
+  barbell: 'Barbell',
+  dumbbell: 'Dumbbell',
+  kettlebell: 'Kettlebell',
+  machine: 'Machine',
+  cable: 'Cable',
+  bodyweight: 'Bodyweight',
+  band: 'Band',
+  other: 'Other',
+};
+
+export const CATEGORY_LABEL: Record<ExerciseCategory, string> = {
+  strength: 'Strength',
+  cardio: 'Cardio',
+  mobility: 'Mobility',
+  plyometric: 'Power',
+};
