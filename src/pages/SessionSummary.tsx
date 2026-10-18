@@ -9,6 +9,7 @@ import { compact, firstName, fmtDay, fmtDuration, fmtNum, fmtTime, fmtWeight, to
 import { shareText } from '../lib/share';
 import { Avatar, Button, Card, confirmDialog, Empty, Page, Section, Stat, toast } from '../components/ui';
 import { RPE_SCALE } from './WorkoutLogger';
+import { fs } from '../lib/display';
 
 export default function SessionSummary() {
   const { id = '' } = useParams();
@@ -91,7 +92,7 @@ export default function SessionSummary() {
       </div>
 
       {prs.length > 0 && (
-        <Card style={{ background: 'linear-gradient(135deg, rgba(187,134,252,0.16), rgba(187,134,252,0.03))', borderColor: 'rgba(187,134,252,0.3)' }}>
+        <Card style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--md-primary) 16%, var(--surface-1)), var(--surface-1))', borderColor: 'color-mix(in srgb, var(--md-primary) 30%, transparent)' }}>
           <div className="row" style={{ gap: 8 }}>
             <Trophy size={20} color="var(--accent)" />
             <span className="bold">{prs.length} personal record{prs.length > 1 ? 's' : ''}</span>
@@ -147,7 +148,7 @@ export default function SessionSummary() {
                 </div>
                 <div className="row wrap mt-1" style={{ gap: 6 }}>
                   {e.sets.map((s, i) => (
-                    <span key={s.id} className="pill tabular" style={{ fontSize: 13 }}>
+                    <span key={s.id} className="pill tabular" style={{ fontSize: fs(13) }}>
                       <span className="faint">{i + 1}</span> {fmtSet(e.exerciseId, s)}
                       {s.rpe ? <span className="faint">@{s.rpe}</span> : null}
                     </span>

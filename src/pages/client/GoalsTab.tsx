@@ -8,6 +8,7 @@ import { exerciseHistory } from '../../lib/analytics/strength';
 import { addDays, daysBetween, dowShort, fmtDay, fmtNum, fmtWeight, fromDisplayWeight, round, today, toDisplayWeight, uid, weekStart, weightUnit } from '../../lib/util';
 import { Button, Card, Empty, Field, NumberInput, Progress, Section, Select, Sheet, Stepper, TextInput, toast } from '../../components/ui';
 import { celebrate } from '../../components/Confetti';
+import { fs } from '../../lib/display';
 
 export default function GoalsTab({ client }: { client: Client }) {
   const data = useStore((s) => s.data);
@@ -88,7 +89,7 @@ export default function GoalsTab({ client }: { client: Client }) {
                           borderRadius: 999,
                           display: 'grid',
                           placeItems: 'center',
-                          fontSize: 11,
+                          fontSize: fs(11),
                           fontWeight: 700,
                           color: done ? 'var(--accent-ink)' : d === t ? 'var(--text)' : 'var(--text-3)',
                           background: done ? 'var(--accent)' : 'var(--surface-2)',

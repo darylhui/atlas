@@ -130,7 +130,7 @@ export default function TrainingTab({ client }: { client: Client }) {
           <span>12 weeks ago</span>
           <span className="row" style={{ gap: 6 }}>
             <i className="key-rect" style={{ background: 'var(--surface-3)' }} /> Rest
-            <i className="key-rect" style={{ background: '#2a6dbd', marginLeft: 6 }} /> Trained
+            <i className="key-rect" style={{ background: 'color-mix(in srgb, var(--series-1) 45%, var(--surface-3))', marginLeft: 6 }} /> Trained
           </span>
           <span>This week</span>
         </div>

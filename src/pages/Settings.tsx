@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Download, Eye, Lock, MapPin, RotateCcw, Sparkles, TriangleAlert, Upload } from 'lucide-react';
 import { StudiosSheet } from '../components/classes';
+import { DisplaySettings } from '../components/DisplaySettings';
 import { actions, emptyData, useStore } from '../lib/store';
 import type { AppData, Units } from '../lib/types';
 import { loadPhoto, savePhoto } from '../lib/db';
@@ -8,6 +9,7 @@ import { buildDemoData } from '../lib/seed/demo';
 import { downloadJson } from '../lib/share';
 import { fmtDuration, today } from '../lib/util';
 import { Button, Card, confirmDialog, Field, ListItem, Page, Section, Segmented, Select, Stepper, TextInput, toast, Toggle } from '../components/ui';
+import { fs } from '../lib/display';
 
 export const CURRENCIES = ['USD', 'GBP', 'EUR', 'AUD', 'NZD', 'CAD', 'SGD', 'MYR', 'HKD', 'INR', 'AED'];
 
@@ -57,6 +59,8 @@ export default function SettingsPage() {
 
   return (
     <Page title="Settings" back compact>
+      <DisplaySettings />
+
       <Section title="Your business">
         <div className="stack">
           <Field label="Your name">
@@ -83,7 +87,7 @@ export default function SettingsPage() {
               <div className="bold">Default rest timer</div>
               <div className="small faint">Used when an exercise has no rest set</div>
             </div>
-            <Stepper value={s.defaultRestSec} onChange={(v) => upd({ defaultRestSec: v })} step={15} min={0} max={600} format={(v) => <span style={{ fontSize: 17 }}>{fmtDuration(v)}</span>} />
+            <Stepper value={s.defaultRestSec} onChange={(v) => upd({ defaultRestSec: v })} step={15} min={0} max={600} format={(v) => <span style={{ fontSize: fs(17) }}>{fmtDuration(v)}</span>} />
           </div>
           <div className="list-item">
             <div className="grow">

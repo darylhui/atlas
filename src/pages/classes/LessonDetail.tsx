@@ -8,6 +8,7 @@ import { dayKey, fmtDay, fmtDuration, mean } from '../../lib/util';
 import { shareText } from '../../lib/share';
 import { ClassForm, ProgramBadge } from '../../components/classes';
 import { Button, Card, confirmDialog, Empty, IconButton, Page, Section, toast } from '../../components/ui';
+import { fs } from '../../lib/display';
 
 const PHASE_COLOR: Record<string, string> = {
   work: 'var(--accent)',
@@ -67,7 +68,7 @@ export function LessonSheet({ lesson }: { lesson: ClassLesson }) {
             <span className="seg-num">{i + 1}</span>
             <div className="grow">
               <div className="row-between" style={{ alignItems: 'baseline' }}>
-                <span className="bold" style={{ fontSize: 17 }}>
+                <span className="bold" style={{ fontSize: fs(17) }}>
                   {s.name}
                 </span>
                 <span className="small tabular faint">{fmtDuration(segmentSeconds(s))}</span>

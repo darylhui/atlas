@@ -15,6 +15,7 @@ import { LineChart } from '../components/charts';
 import { Avatar, Button, Card, Empty, IconButton, Progress, Ring, Section, Sheet, Stat, toast, ZonePill } from '../components/ui';
 import { CheckInFields } from './CheckInForm';
 import { FoodSheet } from './client/NutritionTab';
+import { fs } from '../lib/display';
 
 /** While set, the app keeps the viewer inside this client's view until the PIN is entered. */
 export const useClientLock = create<{ path: string | null }>(() => ({ path: null }));
@@ -376,7 +377,7 @@ function PinPad({ pin, onSuccess, onClose }: { pin: string; onSuccess: () => voi
             d === '' ? (
               <span key="blank" />
             ) : (
-              <button key={d} className="btn btn-secondary" style={{ minHeight: 64, fontSize: 24 }} aria-label={d === 'del' ? 'Delete digit' : undefined} onClick={() => (d === 'del' ? setV(v.slice(0, -1)) : press(d))}>
+              <button key={d} className="btn btn-secondary" style={{ minHeight: 64, fontSize: fs(24) }} aria-label={d === 'del' ? 'Delete digit' : undefined} onClick={() => (d === 'del' ? setV(v.slice(0, -1)) : press(d))}>
                 {d === 'del' ? <Delete size={24} /> : d}
               </button>
             ),

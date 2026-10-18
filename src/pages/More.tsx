@@ -5,6 +5,7 @@ import { useSettings } from '../lib/store';
 import { Logo } from '../components/Layout';
 import { ClientPicker } from '../components/sheets';
 import { Card, ListItem, Page, Sheet } from '../components/ui';
+import { fs } from '../lib/display';
 
 export default function More() {
   const nav = useNavigate();
@@ -25,7 +26,7 @@ export default function More() {
         <div className="row">
           <Logo size={44} />
           <div>
-            <div className="bold" style={{ fontSize: 17 }}>
+            <div className="bold" style={{ fontSize: fs(17) }}>
               {settings.businessName || 'Atlas'}
             </div>
             <div className="small faint">{settings.trainerName || 'Personal trainer'}</div>
@@ -39,7 +40,7 @@ export default function More() {
         <ListItem icon={icon(MonitorSmartphone)} title="Client view" subtitle="Hand your device to a client" onClick={() => setPick(true)} />
         <ListItem icon={icon(Calculator)} title="Coach tools" subtitle="1RM, plates, interval timer, RPE chart" onClick={() => nav('/tools')} />
         <ListItem icon={icon(Banknote)} title="Business" subtitle="Revenue, renewals, attendance" onClick={() => nav('/business')} />
-        <ListItem icon={icon(Settings)} title="Settings & backup" subtitle="Units, PIN, export, demo data" onClick={() => nav('/settings')} />
+        <ListItem icon={icon(Settings)} title="Settings & backup" subtitle="Display, text size, units, PIN, backup" onClick={() => nav('/settings')} />
         {!standalone && !__SINGLE_FILE__ && <ListItem icon={icon(Smartphone)} title="Install on iPhone / iPad" subtitle="Full-screen app from your Home Screen" onClick={() => setInstall(true)} />}
       </div>
 

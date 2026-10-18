@@ -463,7 +463,7 @@ export function Heatmap({ days, weeks = 12, label }: { days: Map<DayKey, number>
           key={c.k}
           title={label(c.k, c.v)}
           aria-label={label(c.k, c.v)}
-          style={{ background: c.future ? 'transparent' : c.v > 1 ? 'var(--series-1)' : c.v > 0 ? '#2a6dbd' : undefined }}
+          style={{ background: c.future ? 'transparent' : c.v > 1 ? 'var(--series-1)' : c.v > 0 ? 'color-mix(in srgb, var(--series-1) 45%, var(--surface-3))' : undefined }}
         />
       ))}
     </div>

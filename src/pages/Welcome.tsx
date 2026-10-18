@@ -6,6 +6,7 @@ import { CURRENCIES } from './Settings';
 import { actions, useStore } from '../lib/store';
 import { buildDemoData } from '../lib/seed/demo';
 import type { Units } from '../lib/types';
+import { fs } from '../lib/display';
 
 const FEATURES = [
   { icon: Dumbbell, title: 'Live workout logging', text: 'Previous numbers, PR detection, rest timer.' },
@@ -80,10 +81,10 @@ export default function Welcome() {
         <div className="stack" style={{ gap: 16 }}>
           <Logo size={64} />
           <div>
-            <h1 className="hero-num" style={{ fontSize: 44 }}>
+            <h1 className="hero-num" style={{ fontSize: fs(44) }}>
               Atlas
             </h1>
-            <p className="muted mt-1" style={{ fontSize: 17 }}>
+            <p className="muted mt-1" style={{ fontSize: fs(17) }}>
               The personal trainer’s toolkit for training, recovery and nutrition — built for iPhone and iPad.
             </p>
           </div>

@@ -7,6 +7,7 @@ import { FORMATS, PROGRAM_TYPES, lessonSeconds, newSegment, segmentSeconds } fro
 import { fmtDuration, uid } from '../../lib/util';
 import { Button, Field, IconButton, NumberInput, Page, Section, Select, Sheet, Stepper, TextInput, toast } from '../../components/ui';
 import { ClassShape } from './LessonDetail';
+import { fs } from '../../lib/display';
 
 function draftLesson(type: string): ClassLesson {
   return {
@@ -132,7 +133,7 @@ function SegmentEditor({
             )}
             {meta.fields.includes('sets') && (
               <Field label="Sets per station">
-                <Stepper value={s.sets} onChange={(v) => set({ sets: v })} min={1} max={10} format={(v) => <span style={{ fontSize: 18 }}>{v}</span>} />
+                <Stepper value={s.sets} onChange={(v) => set({ sets: v })} min={1} max={10} format={(v) => <span style={{ fontSize: fs(18) }}>{v}</span>} />
               </Field>
             )}
             {meta.fields.includes('transition') && (
@@ -142,7 +143,7 @@ function SegmentEditor({
             )}
             {meta.fields.includes('rounds') && (
               <Field label={meta.roundsLabel ?? 'Rounds'}>
-                <Stepper value={s.rounds} onChange={(v) => set({ rounds: v })} min={1} max={60} format={(v) => <span style={{ fontSize: 18 }}>{v}</span>} />
+                <Stepper value={s.rounds} onChange={(v) => set({ rounds: v })} min={1} max={60} format={(v) => <span style={{ fontSize: fs(18) }}>{v}</span>} />
               </Field>
             )}
             {meta.fields.includes('duration') && (
@@ -168,7 +169,7 @@ function SegmentEditor({
                   <X size={16} />
                 </IconButton>
               </div>
-              <input className="input" value={m.options ?? ''} placeholder="Regression / progression (optional)" onChange={(e) => setMove(m.id, { options: e.target.value || undefined })} aria-label="Options" style={{ minHeight: 38, fontSize: 16, padding: '6px 10px' }} />
+              <input className="input" value={m.options ?? ''} placeholder="Regression / progression (optional)" onChange={(e) => setMove(m.id, { options: e.target.value || undefined })} aria-label="Options" style={{ minHeight: 38, fontSize: fs(16), padding: '6px 10px' }} />
             </div>
           ))}
           <div className="grid-2">

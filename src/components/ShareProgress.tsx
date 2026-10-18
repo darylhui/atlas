@@ -86,7 +86,7 @@ function drawCard(s: CardStats, accent: string): HTMLCanvasElement {
   c.width = W;
   c.height = H;
   const ctx = c.getContext('2d')!;
-  const font = (w: number, size: number) => `${w} ${size}px "Roboto Flex Variable", Roboto, system-ui, sans-serif`;
+  const font = (w: number, size: number) => `${w} ${size}px "Inter Variable", Inter, system-ui, sans-serif`;
 
   const g = ctx.createLinearGradient(0, 0, W, H);
   g.addColorStop(0, '#1e1e1e');

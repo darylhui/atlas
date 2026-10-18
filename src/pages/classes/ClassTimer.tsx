@@ -7,6 +7,7 @@ import { fmtDuration } from '../../lib/util';
 import { requestWakeLock, speak, tone, unlockAudio } from '../../lib/sound';
 import { Button, confirmDialog, Empty, ListItem, Sheet, toast, useNow } from '../../components/ui';
 import { ProgramBadge } from '../../components/classes';
+import { fs } from '../../lib/display';
 
 const PHASE_LABEL: Record<Interval['phase'], string> = {
   work: 'Work',
@@ -201,7 +202,7 @@ export default function ClassTimer() {
           <X size={20} />
         </button>
         <div className="grow" style={{ minWidth: 0 }}>
-          <div className="bold truncate" style={{ fontSize: 17 }}>
+          <div className="bold truncate" style={{ fontSize: fs(17) }}>
             {lesson.title}
           </div>
           <div className="xs muted truncate">
@@ -231,7 +232,7 @@ export default function ClassTimer() {
               <div className="ct-meta">
                 {lesson.segments.length} blocks · starts with {lesson.segments[0]?.name}
               </div>
-              <Button variant="primary" className="mt-3" onClick={toggle} style={{ minHeight: 60, padding: '0 32px', fontSize: 19 }}>
+              <Button variant="primary" className="mt-3" onClick={toggle} style={{ minHeight: 60, padding: '0 32px', fontSize: fs(19) }}>
                 <Play size={22} /> Start class
               </Button>
               <div className="xs faint mt-2">Tip: mirror this screen to the studio TV with AirPlay. Space bar or arrow keys work too.</div>

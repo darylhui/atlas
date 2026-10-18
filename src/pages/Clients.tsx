@@ -8,6 +8,7 @@ import { daysSinceLastSession } from '../lib/analytics/strength';
 import { addDays, today } from '../lib/util';
 import { Avatar, Button, Chips, Empty, IconButton, Page, SearchInput, ZonePill } from '../components/ui';
 import { ChevronRight } from 'lucide-react';
+import { fs } from '../lib/display';
 
 type Filter = 'active' | 'paused' | 'archived' | 'all';
 
@@ -59,7 +60,7 @@ export default function Clients() {
           <button key={c.id} className="list-item" onClick={() => nav(`/clients/${c.id}`)}>
             <Avatar name={c.name} color={c.color} size={44} />
             <div className="grow">
-              <div className="bold truncate" style={{ fontSize: 16 }}>
+              <div className="bold truncate" style={{ fontSize: fs(16) }}>
                 {c.name}
               </div>
               <div className="small faint truncate">

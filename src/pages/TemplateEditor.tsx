@@ -7,6 +7,7 @@ import { MUSCLE_LABEL } from '../lib/seed/exercises';
 import { fmtDuration, uid } from '../lib/util';
 import { ClientPicker, ExercisePicker } from '../components/sheets';
 import { Button, confirmDialog, Empty, Field, IconButton, Page, Section, Stepper, TextInput, toast } from '../components/ui';
+import { fs } from '../lib/display';
 
 export default function TemplateEditor() {
   const { id = 'new' } = useParams();
@@ -94,7 +95,7 @@ export default function TemplateEditor() {
                     <TextInput value={e.reps} onChange={(x) => patchEx(e.id, { reps: x.target.value })} placeholder="8-10" style={{ textAlign: 'center' }} />
                   </Field>
                   <Field label="Rest">
-                    <Stepper value={e.restSec} onChange={(v) => patchEx(e.id, { restSec: v })} step={15} max={600} format={(v) => <span style={{ fontSize: 16 }}>{fmtDuration(v)}</span>} />
+                    <Stepper value={e.restSec} onChange={(v) => patchEx(e.id, { restSec: v })} step={15} max={600} format={(v) => <span style={{ fontSize: fs(16) }}>{fmtDuration(v)}</span>} />
                   </Field>
                 </div>
                 <div className="mt-2">

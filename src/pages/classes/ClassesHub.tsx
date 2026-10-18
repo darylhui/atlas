@@ -7,6 +7,7 @@ import { classPay, classTitle, presentCount } from '../../lib/classes';
 import { addDays, dayKey, fmtDay, fmtTime, mean, money, relativeDay, today, weekStart } from '../../lib/util';
 import { ClassForm, ClassRow, LessonLibrary, ProgramBadge, StudiosSheet } from '../../components/classes';
 import { Button, Card, Empty, IconButton, Page, Section, Segmented, Stat } from '../../components/ui';
+import { fs } from '../../lib/display';
 
 type Tab = 'timetable' | 'programmes' | 'history';
 
@@ -78,7 +79,7 @@ export default function ClassesHub() {
                 </span>
                 <ProgramBadge type={next.programType} />
               </div>
-              <div className="bold mt-1" style={{ fontSize: 22, letterSpacing: '-0.02em' }}>
+              <div className="bold mt-1" style={{ fontSize: fs(22), letterSpacing: '-0.02em' }}>
                 {classTitle(next, data.lessons)}
               </div>
               <div className="small muted mt-1 row" style={{ gap: 6 }}>

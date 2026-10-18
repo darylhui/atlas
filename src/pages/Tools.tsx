@@ -5,6 +5,7 @@ import { e1rm, pctOf1rm, platesPerSide } from '../lib/analytics/strength';
 import { beep, requestWakeLock, unlockAudio } from '../lib/sound';
 import { fmtDuration, fmtNum, round, toDisplayWeight, weightUnit } from '../lib/util';
 import { Button, Card, Field, NumberInput, Page, Section, Segmented, Stepper, useNow } from '../components/ui';
+import { fs } from '../lib/display';
 
 const KG_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
 const LB_PLATES = [45, 35, 25, 10, 5, 2.5];
@@ -162,12 +163,12 @@ function IntervalTimer() {
 
   return (
     <div className="stack">
-      <Card style={{ borderColor: phase === 'work' ? 'rgba(187,134,252,0.4)' : undefined }}>
+      <Card style={{ borderColor: phase === 'work' ? 'color-mix(in srgb, var(--md-primary) 45%, transparent)' : undefined }}>
         <div className="center">
           <div className="bold" style={{ color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             {phase === 'ready' ? 'Ready' : phase === 'done' ? 'Done' : phase}
           </div>
-          <div className="hero-num tabular" style={{ fontSize: 80, marginTop: 6 }}>
+          <div className="hero-num tabular" style={{ fontSize: fs(80), marginTop: 6 }}>
             {phase === 'ready' ? fmtDuration(work) : fmtDuration(Math.ceil(left))}
           </div>
           <div className="muted">
@@ -202,13 +203,13 @@ function IntervalTimer() {
       </Card>
       <div className="grid-3">
         <Field label="Work">
-          <Stepper value={work} onChange={setWork} step={5} min={5} max={600} format={(v) => <span style={{ fontSize: 17 }}>{fmtDuration(v)}</span>} />
+          <Stepper value={work} onChange={setWork} step={5} min={5} max={600} format={(v) => <span style={{ fontSize: fs(17) }}>{fmtDuration(v)}</span>} />
         </Field>
         <Field label="Rest">
-          <Stepper value={restSec} onChange={setRestSec} step={5} min={0} max={600} format={(v) => <span style={{ fontSize: 17 }}>{fmtDuration(v)}</span>} />
+          <Stepper value={restSec} onChange={setRestSec} step={5} min={0} max={600} format={(v) => <span style={{ fontSize: fs(17) }}>{fmtDuration(v)}</span>} />
         </Field>
         <Field label="Rounds">
-          <Stepper value={rounds} onChange={setRounds} min={1} max={50} format={(v) => <span style={{ fontSize: 17 }}>{v}</span>} />
+          <Stepper value={rounds} onChange={setRounds} min={1} max={50} format={(v) => <span style={{ fontSize: fs(17) }}>{v}</span>} />
         </Field>
       </div>
       <div className="row wrap" style={{ gap: 8 }}>

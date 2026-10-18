@@ -29,9 +29,11 @@ import ClassTimer from './pages/classes/ClassTimer';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
+  // Welcome and the dashboard share "/", so also reset when onboarding finishes.
+  const onboarded = useStore((s) => s.data.settings.onboarded);
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [pathname, onboarded]);
   return null;
 }
 

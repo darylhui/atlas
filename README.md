@@ -22,6 +22,7 @@ Atlas is a dark-themed, mobile-first web app for personal trainers. It tracks cl
 | **Schedule** | Week strip with day agenda, recurring weekly bookings, no-show tracking, and calendar (.ics) invites. |
 | **Tools** | 1RM calculator with % table, plate calculator, Tabata/EMOM interval timer, and an RPE ↔ RIR chart. |
 | **Data** | Local-first (IndexedDB). JSON backup and restore with photos, a demo studio, and kg/lb units. |
+| **Display** | Dark, light or match-system appearance, five text sizes and a bold-text option, saved per device and applied before the first paint. |
 
 ![Group classes](docs/classes.png)
 

@@ -12,6 +12,7 @@ import { Avatar, Button, Card, confirmDialog, Empty, Field, IconButton, ListItem
 import { ExercisePicker } from '../components/sheets';
 import { PlateCalculator } from './Tools';
 import { celebrate } from '../components/Confetti';
+import { fs } from '../lib/display';
 
 const TYPE_CYCLE: SetType[] = ['normal', 'warmup', 'drop', 'failure'];
 const TYPE_LABEL: Record<SetType, string> = { normal: 'Working set', warmup: 'Warm-up', drop: 'Drop set', failure: 'To failure' };
@@ -141,7 +142,7 @@ export default function WorkoutLogger() {
               aria-label="Workout name"
               value={session.name}
               onChange={(e) => update((s) => ({ ...s, name: e.target.value }))}
-              style={{ minHeight: 30, padding: '2px 6px', margin: '0 -6px', background: 'transparent', border: 0, boxShadow: 'none', borderRadius: 4, fontWeight: 500, fontSize: 18 }}
+              style={{ minHeight: 30, padding: '2px 6px', margin: '0 -6px', background: 'transparent', border: 0, boxShadow: 'none', borderRadius: 4, fontWeight: 500, fontSize: fs(18) }}
             />
             <div className="xs faint row" style={{ gap: 6 }}>
               {firstName(client.name)} · <Elapsed start={session.startedAt} /> · {doneSets}/{totalSets} sets
