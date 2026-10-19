@@ -440,32 +440,99 @@ export function ChartCard({
   );
 }
 
-/** GitHub-style calendar of the last N weeks. */
-export function Heatmap({ days, weeks = 12, label }: { days: Map<DayKey, number>; weeks?: number; label: (k: DayKey, v: number) => string }) {
-  const cells = useMemo(() => {
-    const today = new Date();
-    const dow = (today.getDay() + 6) % 7;
-    const start = new Date(today);
-    start.setDate(start.getDate() - dow - (weeks - 1) * 7);
-    const out: { k: DayKey; v: number; future: boolean }[] = [];
-    for (let i = 0; i < weeks * 7; i++) {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      const k = keyFromTs(d.getTime());
-      out.push({ k, v: days.get(k) ?? 0, future: d > today });
+/** GitHub-style contribution calendar of the last N weeks (Monday-first columns). */
+export function Heatmap({
+  days,
+  weights,
+  minWeeks = 12,
+  label,
+}: {
+  /** Sessions per day (used for labels and, without weights, for shading). */
+  days: Map<DayKey, number>;
+  /** Optional per-day intensity used for shading instead of the count. */
+  weights?: Map<DayKey, number>;
+  minWeeks?: number;
+  label: (k: DayKey, v: number) => string;
+}) {
+  // Like GitHub, show as many weeks as fit (cells ≈ 22px), never fewer than minWeeks, up to a year.
+  const [ref, width] = useElementWidth<HTMLDivElement>();
+  const weeks = Math.min(53, Math.max(minWeeks, Math.floor((width - 36 + 4) / 26)));
+  const { cols, months, max, active } = useMemo(() => {
+    const now = new Date();
+    const dow = (now.getDay() + 6) % 7;
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow - (weeks - 1) * 7);
+    const todayKey = keyFromTs(now.getTime());
+    const cols: { k: DayKey; v: number; w: number; future: boolean; today: boolean }[][] = [];
+    let max = 0;
+    let active = 0;
+    for (let w = 0; w < weeks; w++) {
+      const col = [];
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + w * 7 + d);
+        const k = keyFromTs(date.getTime());
+        const future = k > todayKey;
+        const v = future ? 0 : (days.get(k) ?? 0);
+        const wgt = v > 0 ? (weights?.get(k) ?? v) : 0;
+        if (v > 0) active++;
+        max = Math.max(max, wgt);
+        col.push({ k, v, w: wgt, future, today: k === todayKey });
+      }
+      cols.push(col);
     }
-    return out;
-  }, [days, weeks]);
+    // Label a column when its week starts a new month; drop a label that would crowd the next one.
+    const months: { col: number; text: string }[] = [];
+    cols.forEach((col, w) => {
+      const m = parseDay(col[0].k).getMonth();
+      if (w === 0 || m !== parseDay(cols[w - 1][0].k).getMonth()) months.push({ col: w, text: parseDay(col[0].k).toLocaleDateString(undefined, { month: 'short' }) });
+    });
+    if (months.length > 1 && months[1].col - months[0].col < 3) months.shift();
+    return { cols, months, max, active };
+  }, [days, weights, weeks]);
+
+  // Five levels like GitHub: 0 = none, 1–4 = quartiles of the busiest day.
+  const level = (v: number) => (v <= 0 ? 0 : Math.max(1, Math.ceil((v / Math.max(1, max)) * 4)));
+
   return (
-    <div className="heat" style={{ gridTemplateColumns: `repeat(${weeks}, 1fr)` }}>
-      {cells.map((c) => (
-        <div
-          key={c.k}
-          title={label(c.k, c.v)}
-          aria-label={label(c.k, c.v)}
-          style={{ background: c.future ? 'transparent' : c.v > 1 ? 'var(--series-1)' : c.v > 0 ? 'color-mix(in srgb, var(--series-1) 45%, var(--surface-3))' : undefined }}
-        />
-      ))}
+    <div ref={ref}>
+      <div className="heatmap">
+        <div className="heatmap-grid" style={{ gridTemplateColumns: `auto repeat(${weeks}, minmax(0, 24px))` }} role="grid" aria-label="Attendance calendar">
+          {months.map((m) => (
+            <span key={m.col} className="hm-month" style={{ gridRow: 1, gridColumn: `${m.col + 2} / span 3` }} aria-hidden>
+              {m.text}
+            </span>
+          ))}
+          {['Mon', '', 'Wed', '', 'Fri', '', ''].map((d, i) => (
+            <span key={i} className="hm-day" style={{ gridRow: i + 2, gridColumn: 1 }} aria-hidden>
+              {d}
+            </span>
+          ))}
+          {cols.flatMap((col, w) =>
+            col.map((c, d) => (
+              <span
+                key={c.k}
+                role="gridcell"
+                className={`hm-cell${c.future ? ' future' : ''}${c.today ? ' today' : ''}`}
+                data-l={level(c.w)}
+                title={c.future ? undefined : label(c.k, c.v)}
+                aria-label={c.future ? undefined : label(c.k, c.v)}
+                style={{ gridRow: d + 2, gridColumn: w + 2 }}
+              />
+            )),
+          )}
+        </div>
+        <div className="hm-foot">
+          <span>
+            {active} active day{active === 1 ? '' : 's'} · last {weeks} weeks
+          </span>
+          <span className="hm-legend" aria-hidden>
+            Less
+            {[0, 1, 2, 3, 4].map((l) => (
+              <i key={l} className="hm-cell" data-l={l} />
+            ))}
+            More
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

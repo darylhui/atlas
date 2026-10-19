@@ -30,6 +30,7 @@
         if (p.textScale) r.style.setProperty('--ts', String(p.textScale));
         if (p.boldText) r.style.setProperty('--wb', '150');
         if (p.reduceTransparency) r.setAttribute('data-solid', '');
+        if (p.glass === false) r.setAttribute('data-glass', 'off');
         if (t === 'light') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f2f2f7');
       })();
     </script>

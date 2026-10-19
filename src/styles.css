@@ -1784,19 +1784,83 @@ input[type='time'].input {
   margin-top: 2px;
 }
 
-/* ---------- Heatmap ---------- */
+/* ---------- Heatmap (GitHub-style contribution calendar) ---------- */
 
-.heat {
+.heatmap {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.heatmap-grid {
   display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(7, 1fr);
+  gap: 4px;
+  align-items: center;
+}
+
+.hm-month {
+  font-size: calc(11px * var(--ts));
+  color: var(--text-2);
+  white-space: nowrap;
+  line-height: 1;
+  padding-bottom: 2px;
+}
+
+.hm-day {
+  font-size: calc(10px * var(--ts));
+  color: var(--text-3);
+  line-height: 1;
+  padding-right: 4px;
+}
+
+.hm-cell {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 30%;
+  background: var(--fill-3);
+  box-shadow: inset 0 0 0 0.5px rgba(127, 127, 127, 0.12);
+}
+
+.hm-cell[data-l='1'] {
+  background: color-mix(in srgb, var(--series-1) 28%, var(--surface-1));
+}
+.hm-cell[data-l='2'] {
+  background: color-mix(in srgb, var(--series-1) 52%, var(--surface-1));
+}
+.hm-cell[data-l='3'] {
+  background: color-mix(in srgb, var(--series-1) 76%, var(--surface-1));
+}
+.hm-cell[data-l='4'] {
+  background: var(--series-1);
+}
+
+.hm-cell.future {
+  visibility: hidden;
+}
+
+.hm-cell.today {
+  outline: 1.5px solid var(--text-2);
+  outline-offset: 1px;
+}
+
+.hm-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: calc(12px * var(--ts));
+  color: var(--text-2);
+}
+
+.hm-legend {
+  display: inline-flex;
+  align-items: center;
   gap: 3px;
 }
 
-.heat div {
-  aspect-ratio: 1;
-  border-radius: 4px;
-  background: var(--fill-2);
+.hm-legend .hm-cell {
+  width: 11px;
+  margin: 0 1px;
 }
 
 /* ---------- Workout logger ---------- */
@@ -2773,4 +2837,172 @@ input[type='time'].input {
 
 .ct-btn:active {
   transform: scale(0.95);
+}
+
+/* ==========================================================================
+   Liquid Glass off (Settings › Display & text size): classic solid iOS style.
+   Kept last so it overrides the glass rules above.
+   ========================================================================== */
+
+:root[data-glass='off'] {
+  --glass-sheen: none;
+  --glass-bg: var(--md-surface-raised);
+  --glass-bg-strong: var(--md-surface-raised);
+  --glass-hi: transparent;
+  --glass-edge: transparent;
+  --glass-ring: transparent;
+  --glass-shadow: 0 4px 18px rgba(0, 0, 0, 0.14);
+  --blur: none;
+  --tabbar-h: 64px;
+  --sheet-bg: #1c1c1e;
+  --sheet-cell: #2c2c2e;
+}
+
+:root[data-glass='off'][data-theme='light'] {
+  --sheet-bg: #f2f2f7;
+  --sheet-cell: #ffffff;
+}
+
+/* Docked tab bar: Today · Clients · + · Classes · More */
+:root[data-glass='off'] .tabbar {
+  gap: 0;
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  padding: 6px calc(8px + var(--safe-right)) var(--safe-bottom) calc(8px + var(--safe-left));
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--md-surface-container) 94%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--separator);
+  pointer-events: auto;
+}
+
+:root[data-glass='off'][data-solid] .tabbar {
+  background: var(--md-surface-container);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+:root[data-glass='off'] .tabbar::before {
+  display: none;
+}
+
+:root[data-glass='off'] .tab-capsule {
+  display: contents;
+}
+
+:root[data-glass='off'] .tabbar .tab {
+  height: 50px;
+  background: none;
+  font-size: calc(10px * var(--ts));
+}
+
+:root[data-glass='off'] .tabbar .tab:nth-child(n + 3) {
+  order: 2;
+}
+
+:root[data-glass='off'] .tabbar .tab-fab {
+  order: 1;
+  width: 48px;
+  height: 48px;
+  margin: 1px 6px 0;
+}
+
+:root[data-glass='off'] .tab-fab,
+:root[data-glass='off'] .glass-tint,
+:root[data-glass='off'] .btn-primary,
+:root[data-glass='off'] .underline-tabs button.on {
+  background: var(--md-primary);
+  box-shadow: none;
+}
+
+:root[data-glass='off'] .tab-fab {
+  color: var(--md-on-primary);
+}
+
+/* Docked sidebar */
+@media (min-width: 768px) {
+  :root[data-glass='off'] .rail {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: calc(var(--rail-w) + var(--safe-left));
+    padding-top: calc(var(--safe-top) + 18px);
+    padding-bottom: calc(var(--safe-bottom) + 18px);
+    padding-left: calc(10px + var(--safe-left));
+    border-radius: 0;
+    background: var(--md-surface-container);
+    border-right: 0.5px solid var(--separator);
+    box-shadow: none;
+  }
+}
+
+/* Nav bar: solid, tint-coloured glyph buttons */
+:root[data-glass='off'] .page-head::before {
+  inset: 0;
+  background: var(--bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+:root[data-glass='off'] .back-btn,
+:root[data-glass='off'] .page-head .icon-btn {
+  background: none;
+  box-shadow: none;
+  color: var(--md-primary);
+}
+
+:root[data-glass='off'] .back-btn {
+  margin-left: -10px;
+}
+
+:root[data-glass='off'] .tabs-scroll {
+  background: var(--bg);
+}
+
+:root[data-glass='off'] .underline-tabs button {
+  box-shadow: none;
+}
+
+/* Sheets slide up from the bottom edge, grouped cells inside */
+:root[data-glass='off'] .sheet-backdrop {
+  padding: 0;
+}
+
+:root[data-glass='off'] .sheet {
+  background: var(--sheet-bg);
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.2);
+}
+
+:root[data-glass='off'] .sheet .card,
+:root[data-glass='off'] .sheet .stat {
+  background: var(--sheet-cell);
+}
+
+:root[data-glass='off'] .sheet-body {
+  padding-bottom: calc(var(--safe-bottom) + 20px);
+}
+
+:root[data-glass='off'] .sheet-foot {
+  padding-bottom: calc(var(--safe-bottom) + 16px);
+}
+
+:root[data-glass='off'] .sheet-body:has(+ .sheet-foot) {
+  padding-bottom: 12px;
+}
+
+:root[data-glass='off'] .sheet-head .icon-btn {
+  width: 32px;
+  height: 32px;
+  background: var(--fill-3);
+  box-shadow: none;
+  color: var(--text-2);
+}
+
+@media (min-width: 768px) {
+  :root[data-glass='off'] .sheet {
+    border-radius: 14px;
+  }
 }

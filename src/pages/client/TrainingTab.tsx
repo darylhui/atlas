@@ -41,14 +41,17 @@ export default function TrainingTab({ client }: { client: Client }) {
         .sort((a, b) => b.start.localeCompare(a.start)),
     [data.groupClasses, client.id],
   );
-  const attendance = useMemo(() => {
-    const m = new Map<string, number>();
-    for (const s of sessions) m.set(s.date, (m.get(s.date) ?? 0) + 1);
-    for (const g of groupClasses) {
-      const k = dayKey(new Date(g.start));
-      m.set(k, (m.get(k) ?? 0) + 1);
-    }
-    return m;
+  // Sessions per day (for labels) and training load per day (session RPE × minutes, for shading).
+  const { attendance, load } = useMemo(() => {
+    const attendance = new Map<string, number>();
+    const load = new Map<string, number>();
+    const add = (k: string, l: number) => {
+      attendance.set(k, (attendance.get(k) ?? 0) + 1);
+      load.set(k, (load.get(k) ?? 0) + l);
+    };
+    for (const s of sessions) add(s.date, (s.sessionRpe ?? 6) * (s.durationMin ?? 60));
+    for (const g of groupClasses) add(dayKey(new Date(g.start)), (g.rpe ?? 6) * g.durationMin);
+    return { attendance, load };
   }, [sessions, groupClasses]);
 
   if (!sessions.length)
@@ -124,16 +127,8 @@ export default function TrainingTab({ client }: { client: Client }) {
         </ChartCard>
       </div>
 
-      <ChartCard title="Attendance" subtitle={`Last 12 weeks · ${weeks.reduce((a, w) => a + w.sessions, 0)} PT sessions${groupClasses.length ? ' + group classes' : ''}`}>
-        <Heatmap days={attendance} label={(k, v) => `${fmtDay(k)}: ${v ? `${v} session${v > 1 ? 's' : ''}` : 'rest'}`} />
-        <div className="row-between xs faint mt-1">
-          <span>12 weeks ago</span>
-          <span className="row" style={{ gap: 6 }}>
-            <i className="key-rect" style={{ background: 'var(--surface-3)' }} /> Rest
-            <i className="key-rect" style={{ background: 'color-mix(in srgb, var(--series-1) 45%, var(--surface-3))', marginLeft: 6 }} /> Trained
-          </span>
-          <span>This week</span>
-        </div>
+      <ChartCard title="Attendance" subtitle={`${groupClasses.length ? 'PT sessions and group classes' : 'PT sessions'} · stronger colour = harder day`}>
+        <Heatmap days={attendance} weights={load} label={(k, v) => `${fmtDay(k)}: ${v ? `${v} session${v > 1 ? 's' : ''}` : 'rest'}`} />
       </ChartCard>
 
       {groupClasses.length > 0 && (

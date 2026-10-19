@@ -1,5 +1,5 @@
 import { Moon, MonitorSmartphone, Sun } from 'lucide-react';
-import { TEXT_SIZES, useDisplay, type ThemePref } from '../lib/display';
+import { DEFAULTS, TEXT_SIZES, useDisplay, type ThemePref } from '../lib/display';
 import { Card, Section, Toggle } from './ui';
 
 const THEMES: { value: ThemePref; label: string; icon: typeof Sun; bg: string; bar: string; accent: string }[] = [
@@ -12,14 +12,14 @@ export function DisplaySettings() {
   const d = useDisplay();
   const idx = Math.max(0, TEXT_SIZES.findIndex((t) => t.value === d.textScale));
   const size = TEXT_SIZES[idx] ?? TEXT_SIZES[1];
-  const isDefault = d.theme === 'dark' && d.textScale === 1 && !d.boldText && !d.reduceTransparency;
+  const isDefault = (Object.keys(DEFAULTS) as (keyof typeof DEFAULTS)[]).every((k) => d[k] === DEFAULTS[k]);
 
   return (
     <Section
       title="Display & text size"
       action={
         !isDefault ? (
-          <button className="section-link" onClick={() => d.set({ theme: 'dark', textScale: 1, boldText: false, reduceTransparency: false })}>
+          <button className="section-link" onClick={() => d.set(DEFAULTS)}>
             Reset
           </button>
         ) : undefined
@@ -77,6 +77,13 @@ export function DisplaySettings() {
         </Card>
 
         <div className="card flush">
+          <div className="list-item">
+            <div className="grow">
+              <div className="bold">Liquid Glass</div>
+              <div className="small faint">Floating glass tab bar, buttons and sheets. Turn off for a classic, solid look.</div>
+            </div>
+            <Toggle on={d.glass} onChange={(v) => d.set({ glass: v })} label="Liquid Glass" />
+          </div>
           <div className="list-item">
             <div className="grow">
               <div className="bold">Bold text</div>

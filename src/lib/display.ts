@@ -16,6 +16,8 @@ export interface DisplayPrefs {
   boldText: boolean;
   /** Opaque glass with no blur (CSS: html[data-solid]). */
   reduceTransparency: boolean;
+  /** Liquid Glass bars and controls; off = classic solid style (CSS: html[data-glass="off"]). */
+  glass: boolean;
 }
 
 export const TEXT_SIZES = [
@@ -27,7 +29,7 @@ export const TEXT_SIZES = [
 ];
 
 const KEY = 'atlas.display';
-const DEFAULTS: DisplayPrefs = { theme: 'dark', textScale: 1, boldText: false, reduceTransparency: false };
+export const DEFAULTS: DisplayPrefs = { theme: 'dark', textScale: 1, boldText: false, reduceTransparency: false, glass: true };
 
 function load(): DisplayPrefs {
   try {
@@ -52,6 +54,8 @@ export function applyDisplay(p: DisplayPrefs) {
   root.style.setProperty('--ts', String(p.textScale));
   root.style.setProperty('--wb', p.boldText ? '150' : '0');
   root.toggleAttribute('data-solid', p.reduceTransparency);
+  if (p.glass) root.removeAttribute('data-glass');
+  else root.setAttribute('data-glass', 'off');
   const meta = document.querySelector('meta[name="theme-color"]');
   meta?.setAttribute('content', theme === 'light' ? '#f2f2f7' : '#000000');
 }
@@ -64,8 +68,8 @@ export const useDisplay = create<DisplayState>((set, get) => ({
   ...load(),
   set(p) {
     set(p);
-    const { theme, textScale, boldText, reduceTransparency } = get();
-    const next = { theme, textScale, boldText, reduceTransparency };
+    const { theme, textScale, boldText, reduceTransparency, glass } = get();
+    const next = { theme, textScale, boldText, reduceTransparency, glass };
     try {
       localStorage.setItem(KEY, JSON.stringify(next));
     } catch {

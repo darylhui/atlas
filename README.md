@@ -12,7 +12,7 @@ Atlas is a dark-themed, mobile-first web app for personal trainers. It tracks cl
 | --- | --- |
 | **Today dashboard** | Today's schedule, a "needs attention" feed (low readiness, load spikes, inactive clients, packages running out, unpaid packages, birthdays, goals at risk), a readiness board across all clients, and recent PRs. |
 | **Workout logger** | Start from a template, repeat a past session or begin empty. Each set shows what the client did last time. Tap ✓ to log: blank fields fill from last time. Set types (warm-up / drop / failure), per-set RPE, live PR badges, an auto rest timer with a beep, a plate calculator, and screen wake-lock. |
-| **Strength analytics** | Estimated 1RM trend per lift, weekly volume, sets per muscle against a 10 sets/week guideline, a 12-week attendance heatmap, and PR history. |
+| **Strength analytics** | Estimated 1RM trend per lift, weekly volume, sets per muscle against a 10 sets/week guideline, a GitHub-style attendance calendar shaded by training load, and PR history. |
 | **Recovery** | A 30-second daily check-in (sleep, energy, mood, stress, soreness with body areas, optional HRV and resting HR). It produces a 0–100 readiness score with training advice. Also: acute:chronic workload ratio (session-RPE × minutes), monotony and strain, HRV/RHR trends, and soreness hotspots. |
 | **Nutrition** | Macro targets from Mifflin–St Jeor BMR × activity × goal. A food log with a ~75-item database, custom foods and quick add. Water tracker, copy previous day, and a 14-day adherence score. |
 | **Body** | Weight, body fat and girth tracking with goal lines. Progress photos stored on the device, with a before/after slider. |
@@ -22,7 +22,7 @@ Atlas is a dark-themed, mobile-first web app for personal trainers. It tracks cl
 | **Schedule** | Week strip with day agenda, recurring weekly bookings, no-show tracking, and calendar (.ics) invites. |
 | **Tools** | 1RM calculator with % table, plate calculator, Tabata/EMOM interval timer, and an RPE ↔ RIR chart. |
 | **Data** | Local-first (IndexedDB). JSON backup and restore with photos, a demo studio, and kg/lb units. |
-| **Display** | Apple-style design with a Liquid Glass tab bar, sidebar, sheets and controls. Dark, light or match-system appearance, five text sizes, bold text and reduce transparency, saved per device and applied before the first paint. |
+| **Display** | Apple-style design with a Liquid Glass tab bar, sidebar, sheets and controls, or a classic solid style (Liquid Glass off). Dark, light or match-system appearance, five text sizes, bold text and reduce transparency, saved per device and applied before the first paint. |
 
 ![Group classes](docs/classes.png)
 
