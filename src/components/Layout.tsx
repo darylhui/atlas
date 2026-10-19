@@ -35,7 +35,7 @@ export function Layout() {
 
   const tab = (t: (typeof TABS)[number]) => (
     <NavLink key={t.to} to={t.to} end={t.end} className={({ isActive }) => `tab${isActive ? ' active' : ''}`}>
-      <t.icon size={23} strokeWidth={2} />
+      <t.icon size={24} strokeWidth={1.9} aria-hidden />
       <span>{t.label}</span>
     </NavLink>
   );
@@ -48,7 +48,7 @@ export function Layout() {
           <span className="rail-word">Atlas</span>
         </div>
         <button className="tab-fab" onClick={() => setQuick(true)} aria-label="Quick add">
-          <Plus size={24} strokeWidth={2.6} />
+          <Plus size={22} strokeWidth={2.4} aria-hidden />
           <span className="rail-word">New</span>
         </button>
         {TABS.map(tab)}
@@ -76,14 +76,17 @@ export function Layout() {
         </button>
       )}
 
+      {/* Floating glass tab bar: tabs in one capsule, quick add beside it */}
       <nav className="tabbar" aria-label="Main">
-        {tab(TABS[0])}
-        {tab(TABS[1])}
+        <div className="tab-capsule">
+          {tab(TABS[0])}
+          {tab(TABS[1])}
+          {tab(TABS[2])}
+          {tab(TABS[5])}
+        </div>
         <button className="tab-fab" onClick={() => setQuick(true)} aria-label="Quick add">
-          <Plus size={26} strokeWidth={2.6} />
+          <Plus size={28} strokeWidth={2.2} aria-hidden />
         </button>
-        {tab(TABS[2])}
-        {tab(TABS[5])}
       </nav>
 
       <QuickActions open={quick} onClose={() => setQuick(false)} />

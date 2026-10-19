@@ -14,6 +14,8 @@ export interface DisplayPrefs {
   /** Multiplier applied to every font size (CSS var --ts). */
   textScale: number;
   boldText: boolean;
+  /** Opaque glass with no blur (CSS: html[data-solid]). */
+  reduceTransparency: boolean;
 }
 
 export const TEXT_SIZES = [
@@ -25,7 +27,7 @@ export const TEXT_SIZES = [
 ];
 
 const KEY = 'atlas.display';
-const DEFAULTS: DisplayPrefs = { theme: 'dark', textScale: 1, boldText: false };
+const DEFAULTS: DisplayPrefs = { theme: 'dark', textScale: 1, boldText: false, reduceTransparency: false };
 
 function load(): DisplayPrefs {
   try {
@@ -49,8 +51,9 @@ export function applyDisplay(p: DisplayPrefs) {
   root.dataset.theme = theme;
   root.style.setProperty('--ts', String(p.textScale));
   root.style.setProperty('--wb', p.boldText ? '150' : '0');
+  root.toggleAttribute('data-solid', p.reduceTransparency);
   const meta = document.querySelector('meta[name="theme-color"]');
-  meta?.setAttribute('content', theme === 'light' ? '#f7f9fa' : '#121212');
+  meta?.setAttribute('content', theme === 'light' ? '#f2f2f7' : '#000000');
 }
 
 interface DisplayState extends DisplayPrefs {
@@ -61,8 +64,8 @@ export const useDisplay = create<DisplayState>((set, get) => ({
   ...load(),
   set(p) {
     set(p);
-    const { theme, textScale, boldText } = get();
-    const next = { theme, textScale, boldText };
+    const { theme, textScale, boldText, reduceTransparency } = get();
+    const next = { theme, textScale, boldText, reduceTransparency };
     try {
       localStorage.setItem(KEY, JSON.stringify(next));
     } catch {

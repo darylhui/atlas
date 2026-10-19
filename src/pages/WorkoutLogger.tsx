@@ -132,9 +132,9 @@ export default function WorkoutLogger() {
     <div className="main no-tabs" style={{ paddingLeft: 'calc(16px + var(--safe-left))', maxWidth: 820 }}>
       <header className="page-head compact">
         <div className="page-head-row">
-          <IconButton label="Back" className="plain" onClick={() => nav(-1)}>
-            <ChevronLeft size={24} />
-          </IconButton>
+          <button className="back-btn" aria-label="Back" onClick={() => nav(-1)}>
+            <ChevronLeft size={26} strokeWidth={2.2} aria-hidden />
+          </button>
           <Avatar name={client.name} color={client.color} size={34} />
           <div className="grow">
             <input
@@ -142,7 +142,7 @@ export default function WorkoutLogger() {
               aria-label="Workout name"
               value={session.name}
               onChange={(e) => update((s) => ({ ...s, name: e.target.value }))}
-              style={{ minHeight: 30, padding: '2px 6px', margin: '0 -6px', background: 'transparent', border: 0, boxShadow: 'none', borderRadius: 4, fontWeight: 500, fontSize: fs(18) }}
+              style={{ minHeight: 30, padding: '2px 6px', margin: '0 -6px', background: 'transparent', border: 0, boxShadow: 'none', borderRadius: 6, fontWeight: 600, fontSize: fs(17) }}
             />
             <div className="xs faint row" style={{ gap: 6 }}>
               {firstName(client.name)} · <Elapsed start={session.startedAt} /> · {doneSets}/{totalSets} sets

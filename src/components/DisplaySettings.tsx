@@ -3,23 +3,23 @@ import { TEXT_SIZES, useDisplay, type ThemePref } from '../lib/display';
 import { Card, Section, Toggle } from './ui';
 
 const THEMES: { value: ThemePref; label: string; icon: typeof Sun; bg: string; bar: string; accent: string }[] = [
-  { value: 'dark', label: 'Dark', icon: Moon, bg: '#121212', bar: '#343434', accent: '#bb86fc' },
-  { value: 'light', label: 'Light', icon: Sun, bg: '#f7f9fa', bar: '#e3e5e5', accent: '#6200ee' },
-  { value: 'system', label: 'System', icon: MonitorSmartphone, bg: 'linear-gradient(135deg, #121212 50%, #f7f9fa 50%)', bar: '#8c8c8c', accent: '#9a5cf6' },
+  { value: 'dark', label: 'Dark', icon: Moon, bg: '#000000', bar: '#2c2c2e', accent: '#bb86fc' },
+  { value: 'light', label: 'Light', icon: Sun, bg: '#f2f2f7', bar: '#d1d1d6', accent: '#6200ee' },
+  { value: 'system', label: 'System', icon: MonitorSmartphone, bg: 'linear-gradient(135deg, #000000 50%, #f2f2f7 50%)', bar: '#8e8e93', accent: '#9a5cf6' },
 ];
 
 export function DisplaySettings() {
   const d = useDisplay();
   const idx = Math.max(0, TEXT_SIZES.findIndex((t) => t.value === d.textScale));
   const size = TEXT_SIZES[idx] ?? TEXT_SIZES[1];
-  const isDefault = d.theme === 'dark' && d.textScale === 1 && !d.boldText;
+  const isDefault = d.theme === 'dark' && d.textScale === 1 && !d.boldText && !d.reduceTransparency;
 
   return (
     <Section
       title="Display & text size"
       action={
         !isDefault ? (
-          <button className="section-link" onClick={() => d.set({ theme: 'dark', textScale: 1, boldText: false })}>
+          <button className="section-link" onClick={() => d.set({ theme: 'dark', textScale: 1, boldText: false, reduceTransparency: false })}>
             Reset
           </button>
         ) : undefined
@@ -83,6 +83,13 @@ export function DisplaySettings() {
               <div className="small faint">Heavier type everywhere for easier reading</div>
             </div>
             <Toggle on={d.boldText} onChange={(v) => d.set({ boldText: v })} label="Bold text" />
+          </div>
+          <div className="list-item">
+            <div className="grow">
+              <div className="bold">Reduce transparency</div>
+              <div className="small faint">Solid backgrounds instead of glass on bars, buttons and sheets</div>
+            </div>
+            <Toggle on={d.reduceTransparency} onChange={(v) => d.set({ reduceTransparency: v })} label="Reduce transparency" />
           </div>
         </div>
       </div>

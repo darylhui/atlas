@@ -33,24 +33,41 @@ export function Page({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  const backBtn = back && (
+    <button className="back-btn" aria-label="Back" onClick={() => (typeof back === 'string' ? nav(back) : nav(-1))}>
+      <ChevronLeft size={26} strokeWidth={2.2} aria-hidden />
+    </button>
+  );
   return (
     <>
       <header ref={headRef} className={`page-head${compact ? ' compact' : ''}`}>
-        {back && (
-          <div className="page-head-row" style={{ minHeight: 36 }}>
-            <button className="back-btn" onClick={() => (typeof back === 'string' ? nav(back) : nav(-1))}>
-              <ChevronLeft size={22} /> Back
-            </button>
-            {actions && <div className="head-actions">{actions}</div>}
+        {compact && back ? (
+          // iOS inline bar: back · centered title · actions
+          <div className="nav-bar">
+            <div>{backBtn}</div>
+            <div className="nav-title">
+              <h1 className="page-title truncate">{title}</h1>
+              {subtitle && <div className="page-sub truncate">{subtitle}</div>}
+            </div>
+            <div className="head-actions">{actions}</div>
           </div>
+        ) : (
+          <>
+            {back && (
+              <div className="page-head-row">
+                {backBtn}
+                {actions && <div className="head-actions">{actions}</div>}
+              </div>
+            )}
+            <div className="page-head-row">
+              <div className="grow">
+                <h1 className="page-title truncate">{title}</h1>
+                {subtitle && <div className="page-sub">{subtitle}</div>}
+              </div>
+              {!back && actions && <div className="head-actions">{actions}</div>}
+            </div>
+          </>
         )}
-        <div className="page-head-row">
-          <div className="grow">
-            <h1 className="page-title truncate">{title}</h1>
-            {subtitle && <div className="page-sub">{subtitle}</div>}
-          </div>
-          {!back && actions && <div className="head-actions">{actions}</div>}
-        </div>
       </header>
       <div className="stack-lg mt-1">{children}</div>
     </>
@@ -434,8 +451,8 @@ export function Sheet({
         <div className="sheet-grip" />
         <div className="sheet-head">
           <div className="sheet-title">{title}</div>
-          <IconButton label="Close" className="plain" onClick={onClose}>
-            <X size={20} />
+          <IconButton label="Close" onClick={onClose}>
+            <X size={20} strokeWidth={2.4} />
           </IconButton>
         </div>
         <div className="sheet-body">{children}</div>

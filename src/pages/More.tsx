@@ -14,9 +14,10 @@ export default function More() {
   const [install, setInstall] = useState(false);
   const standalone = typeof window !== 'undefined' && (window.matchMedia?.('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone);
 
-  const icon = (I: typeof Settings) => (
-    <div className="quick-icon">
-      <I size={19} />
+  // iOS Settings-style tiles: a white glyph on a system color.
+  const icon = (I: typeof Settings, color: string) => (
+    <div className="icon-tile sm" style={{ background: color }}>
+      <I size={18} strokeWidth={2.2} aria-hidden />
     </div>
   );
 
@@ -34,14 +35,14 @@ export default function More() {
         </div>
       </Card>
       <div className="card flush">
-        <ListItem icon={icon(CalendarDays)} title="Schedule" subtitle="PT sessions and group classes by week" onClick={() => nav('/schedule')} />
-        <ListItem icon={icon(Timer)} title="Classes" subtitle="Studio timetable, lesson programmes, class timer" onClick={() => nav('/classes')} />
-        <ListItem icon={icon(ClipboardList)} title="Library" subtitle="PT templates, class lessons & exercises" onClick={() => nav('/library')} />
-        <ListItem icon={icon(MonitorSmartphone)} title="Client view" subtitle="Hand your device to a client" onClick={() => setPick(true)} />
-        <ListItem icon={icon(Calculator)} title="Coach tools" subtitle="1RM, plates, interval timer, RPE chart" onClick={() => nav('/tools')} />
-        <ListItem icon={icon(Banknote)} title="Business" subtitle="Revenue, renewals, attendance" onClick={() => nav('/business')} />
-        <ListItem icon={icon(Settings)} title="Settings & backup" subtitle="Display, text size, units, PIN, backup" onClick={() => nav('/settings')} />
-        {!standalone && !__SINGLE_FILE__ && <ListItem icon={icon(Smartphone)} title="Install on iPhone / iPad" subtitle="Full-screen app from your Home Screen" onClick={() => setInstall(true)} />}
+        <ListItem icon={icon(CalendarDays, '#ff3b30')} title="Schedule" subtitle="PT sessions and group classes by week" onClick={() => nav('/schedule')} />
+        <ListItem icon={icon(Timer, '#ff9500')} title="Classes" subtitle="Studio timetable, lesson programmes, class timer" onClick={() => nav('/classes')} />
+        <ListItem icon={icon(ClipboardList, '#007aff')} title="Library" subtitle="PT templates, class lessons & exercises" onClick={() => nav('/library')} />
+        <ListItem icon={icon(MonitorSmartphone, '#af52de')} title="Client view" subtitle="Hand your device to a client" onClick={() => setPick(true)} />
+        <ListItem icon={icon(Calculator, '#5856d6')} title="Coach tools" subtitle="1RM, plates, interval timer, RPE chart" onClick={() => nav('/tools')} />
+        <ListItem icon={icon(Banknote, '#34c759')} title="Business" subtitle="Revenue, renewals, attendance" onClick={() => nav('/business')} />
+        <ListItem icon={icon(Settings, '#8e8e93')} title="Settings & backup" subtitle="Display, text size, units, PIN, backup" onClick={() => nav('/settings')} />
+        {!standalone && !__SINGLE_FILE__ && <ListItem icon={icon(Smartphone, '#007aff')} title="Install on iPhone / iPad" subtitle="Full-screen app from your Home Screen" onClick={() => setInstall(true)} />}
       </div>
 
       <ClientPicker open={pick} onClose={() => setPick(false)} title="Open client view for…" onPick={(c) => nav(`/client-mode/${c.id}`)} />
