@@ -21,12 +21,12 @@ export const APPT_STATUS: Record<AppointmentStatus, { label: string; zone: 'good
   no_show: { label: 'No-show', zone: 'critical' },
 };
 
-export function AppointmentRow({ a, onClick }: { a: Appointment; onClick: () => void }) {
+export function AppointmentRow({ a, onClick, past }: { a: Appointment; onClick: () => void; past?: boolean }) {
   const client = useData((d) => d.clients.find((c) => c.id === a.clientId));
   const T = APPT_TYPE[a.type];
   const s = APPT_STATUS[a.status];
   return (
-    <button className="list-item" onClick={onClick} style={{ opacity: a.status === 'cancelled' ? 0.5 : 1 }}>
+    <button className={`list-item${past ? ' past' : ''}`} onClick={onClick} style={{ opacity: a.status === 'cancelled' ? 0.5 : 1 }}>
       <div className="timeline-time">{fmtTime(a.start)}</div>
       {client && <Avatar name={client.name} color={client.color} size={36} />}
       <div className="grow">
@@ -34,7 +34,10 @@ export function AppointmentRow({ a, onClick }: { a: Appointment; onClick: () => 
           {client?.name ?? 'Unknown client'}
         </div>
         <div className="small faint row" style={{ gap: 5 }}>
-          <T.icon size={13} /> {T.label} · {a.durationMin} min{a.location ? ` · ${a.location}` : ''}
+          <T.icon size={14} style={{ flex: 'none' }} aria-hidden />
+          <span className="truncate">
+            {a.durationMin} min{a.location ? ` · ${a.location}` : ''} · {T.label}
+          </span>
         </div>
       </div>
       {a.status !== 'scheduled' && (
@@ -80,7 +83,7 @@ export function AppointmentActions({ appt, onClose }: { appt?: Appointment; onCl
           {appt.workoutId ? (
             <ListItem icon={<Dumbbell size={18} />} title="View workout" onClick={() => { onClose(); nav(`/sessions/${appt.workoutId}`); }} />
           ) : (
-            appt.status === 'scheduled' && <ListItem icon={<Dumbbell size={18} color="var(--accent)" />} title="Start workout" subtitle="Session auto-completes when you finish" onClick={() => setStart(true)} />
+            appt.status === 'scheduled' && <ListItem icon={<Dumbbell size={18} color="var(--accent-text)" />} title="Start workout" subtitle="Session auto-completes when you finish" onClick={() => setStart(true)} />
           )}
           {client && <ListItem icon={<Activity size={18} />} title="Readiness check-in" onClick={() => { onClose(); nav(`/clients/${client.id}/check-in`); }} />}
           {client && <ListItem icon={<UserRound size={18} />} title="Open client profile" onClick={() => { onClose(); nav(`/clients/${client.id}`); }} />}
@@ -156,6 +159,7 @@ export function AppointmentForm({
 }) {
   const clients = useData((d) => d.clients);
   const settings = useData((d) => d.settings);
+  const studios = useData((d) => d.studios);
   const active = clients.filter((c) => c.status !== 'archived');
   const [cid, setCid] = useState<ID>(initial?.clientId ?? clientId ?? active[0]?.id ?? '');
   const [date, setDate] = useState<DayKey>(initial ? dayKey(new Date(initial.start)) : day ?? dayKey());
@@ -229,7 +233,12 @@ export function AppointmentForm({
           </Field>
         </div>
         <Field label="Location">
-          <TextInput value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Studio, park, video call…" />
+          <TextInput value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Studio, park, video call…" list="location-names" />
+          <datalist id="location-names">
+            {studios.map((s) => (
+              <option key={s.id} value={s.name} />
+            ))}
+          </datalist>
         </Field>
         <Field label="Notes">
           <TextInput value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Focus for this session" />

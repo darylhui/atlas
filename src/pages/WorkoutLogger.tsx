@@ -268,7 +268,7 @@ export default function WorkoutLogger() {
                 key={t}
                 title={TYPE_LABEL[t]}
                 chevron={false}
-                right={setMenu.set.type === t ? <Check size={18} color="var(--accent)" /> : undefined}
+                right={setMenu.set.type === t ? <Check size={18} color="var(--accent-text)" /> : undefined}
                 onClick={() => {
                   patchSet(setMenu.exId, setMenu.set.id, { type: t });
                   setSetMenu(undefined);
@@ -379,7 +379,7 @@ function RestTimer({ rest, onChange }: { rest: { until: number; total: number };
   }, [left, onChange]);
   return (
     <div className="rest-bar" role="timer" aria-live="off">
-      <Timer size={20} color="var(--accent)" />
+      <Timer size={20} color="var(--accent-text)" />
       <div className="rest-time">{left > 0 ? fmtDuration(Math.ceil(left)) : 'Go!'}</div>
       <div className="grow small muted">Rest</div>
       <Button size="sm" onClick={() => onChange({ until: rest.until - 15000, total: rest.total })}>

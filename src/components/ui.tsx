@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { create } from 'zustand';
@@ -11,16 +11,22 @@ import { initials } from '../lib/util';
 export function Page({
   title,
   subtitle,
+  eyebrow,
   back,
   actions,
   compact,
+  center,
   children,
 }: {
   title: ReactNode;
+  /** Small uppercase line above a large title. */
+  eyebrow?: ReactNode;
   subtitle?: ReactNode;
   back?: string | boolean;
   actions?: ReactNode;
   compact?: boolean;
+  /** Centre the large title on wide screens. */
+  center?: boolean;
   children: ReactNode;
 }) {
   const nav = useNavigate();
@@ -40,7 +46,7 @@ export function Page({
   );
   return (
     <>
-      <header ref={headRef} className={`page-head${compact ? ' compact' : ''}`}>
+      <header ref={headRef} className={`page-head${compact ? ' compact' : ''}${center ? ' centered' : ''}`}>
         {compact && back ? (
           // iOS inline bar: back · centered title · actions
           <div className="nav-bar">
@@ -61,6 +67,7 @@ export function Page({
             )}
             <div className="page-head-row">
               <div className="grow">
+                {eyebrow && <div className="eyebrow">{eyebrow}</div>}
                 <h1 className="page-title truncate">{title}</h1>
                 {subtitle && <div className="page-sub">{subtitle}</div>}
               </div>
@@ -156,17 +163,20 @@ export function Stat({
   unit,
   delta,
   icon,
+  tile,
 }: {
   label: ReactNode;
   value: ReactNode;
   unit?: string;
   delta?: ReactNode;
   icon?: ReactNode;
+  /** Show the icon in a tinted tile, with a rule above the footnote. */
+  tile?: boolean;
 }) {
   return (
-    <div className="stat">
+    <div className={`stat${tile ? ' has-tile' : ''}`}>
       <div className="stat-label">
-        {icon}
+        {tile ? <span className="tile">{icon}</span> : icon}
         {label}
       </div>
       <div className="stat-value">
@@ -284,11 +294,16 @@ export function Select<T extends string>({ value, onChange, options }: { value: 
   );
 }
 
-export function SearchInput({ value, onChange, placeholder = 'Search' }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+export function SearchInput({
+  value,
+  onChange,
+  placeholder = 'Search',
+  ...rest
+}: { value: string; onChange: (v: string) => void; placeholder?: string } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'>) {
   return (
     <div className="search">
-      <Search size={18} />
-      <input className="input" type="search" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+      <Search size={18} aria-hidden />
+      <input aria-label={placeholder} {...rest} className="input" type="search" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
 }
@@ -309,7 +324,7 @@ export function Chips<T extends string>({ value, onChange, options, wrap }: { va
   return (
     <div className={`chips${wrap ? ' wrap-chips' : ''}`}>
       {options.map((o) => (
-        <button key={o.value} className={`chip${value === o.value ? ' on' : ''}`} onClick={() => onChange(o.value)}>
+        <button key={o.value} aria-pressed={value === o.value} className={`chip${value === o.value ? ' on' : ''}`} onClick={() => onChange(o.value)}>
           {o.label}
         </button>
       ))}
@@ -354,7 +369,7 @@ export function Scale({ value, onChange, labels }: { value: number; onChange: (v
 
 export function Avatar({ name, color, size = 40 }: { name: string; color: string; size?: number }) {
   return (
-    <div className="avatar" style={{ width: size, height: size, background: color, fontSize: size * 0.38 }}>
+    <div className="avatar" style={{ width: size, height: size, fontSize: size * 0.36, '--c': color } as React.CSSProperties}>
       {initials(name)}
     </div>
   );
@@ -444,13 +459,35 @@ export function Sheet({
       document.body.style.overflow = prev;
     };
   }, [open, onClose]);
+  // Move focus into the sheet, keep Tab inside it, and hand focus back on close.
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.activeElement as HTMLElement | null;
+    const el = sheetRef.current;
+    if (el && !el.contains(prev)) el.focus({ preventScroll: true });
+    return () => prev?.focus?.({ preventScroll: true });
+  }, [open]);
+  const trapTab = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Tab') return;
+    const all = [...(sheetRef.current?.querySelectorAll<HTMLElement>('button, a[href], input, select, textarea, [tabindex]') ?? [])].filter((x) => x.tabIndex >= 0 && !x.matches(':disabled') && x.offsetParent !== null);
+    if (!all.length) return;
+    const first = all[0];
+    const last = all[all.length - 1];
+    const at = document.activeElement;
+    if (e.shiftKey ? at === first || at === sheetRef.current : at === last) {
+      e.preventDefault();
+      (e.shiftKey ? last : first).focus();
+    }
+  };
   if (!open) return null;
   return createPortal(
     <div className="sheet-backdrop" onClick={onClose}>
-      <div className={`sheet${wide ? ' wide' : ''}`} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+      <div className={`sheet${wide ? ' wide' : ''}`} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} ref={sheetRef} onKeyDown={trapTab} style={{ outline: 'none' }} onClick={(e) => e.stopPropagation()}>
         <div className="sheet-grip" />
         <div className="sheet-head">
-          <div className="sheet-title">{title}</div>
+          <div className="sheet-title" id={titleId}>{title}</div>
           <IconButton label="Close" onClick={onClose}>
             <X size={20} strokeWidth={2.4} />
           </IconButton>

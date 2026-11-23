@@ -96,7 +96,7 @@ export async function requestPersistence(): Promise<boolean> {
 }
 
 /** Downscale and JPEG-compress an image file so photos stay small on-device. */
-export async function compressImage(file: File, maxSide = 1080, quality = 0.82): Promise<string> {
+export async function compressImage(file: Blob, maxSide = 1080, quality = 0.82): Promise<string> {
   const url = URL.createObjectURL(file);
   try {
     const img = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -109,7 +109,10 @@ export async function compressImage(file: File, maxSide = 1080, quality = 0.82):
     const canvas = document.createElement('canvas');
     canvas.width = Math.round(img.naturalWidth * scale);
     canvas.height = Math.round(img.naturalHeight * scale);
-    canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#ffffff'; // transparent PNGs would otherwise turn black
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL('image/jpeg', quality);
   } finally {
     URL.revokeObjectURL(url);

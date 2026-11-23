@@ -121,7 +121,7 @@ export default function OverviewTab({ client, onTab, onStart }: { client: Client
             ) : (
               <ListItem icon={<CalendarDays size={20} className="faint" />} title="No upcoming sessions" subtitle="Book from the schedule" onClick={() => nav(`/schedule?new=1&client=${client.id}`)} />
             )}
-            <ListItem icon={<Dumbbell size={20} color="var(--accent)" />} title="Start a workout now" onClick={onStart} />
+            <ListItem icon={<Dumbbell size={20} color="var(--accent-text)" />} title="Start a workout now" onClick={onStart} />
           </div>
         </Section>
 
@@ -172,7 +172,7 @@ export default function OverviewTab({ client, onTab, onStart }: { client: Client
             {prs.map((p, i) => (
               <ListItem
                 key={i}
-                icon={<Trophy size={18} color="var(--accent)" />}
+                icon={<Trophy size={18} color="var(--accent-text)" />}
                 title={exName.get(p.exerciseId)}
                 subtitle={`${fmtWeight(p.weight, units)} × ${p.reps} · est. 1RM ${fmtWeight(p.value, units)} · ${fmtDay(p.date)}`}
                 onClick={() => nav(`/sessions/${p.sessionId}`)}

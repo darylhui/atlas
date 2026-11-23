@@ -3,9 +3,9 @@ import { DEFAULTS, TEXT_SIZES, useDisplay, type ThemePref } from '../lib/display
 import { Card, Section, Toggle } from './ui';
 
 const THEMES: { value: ThemePref; label: string; icon: typeof Sun; bg: string; bar: string; accent: string }[] = [
-  { value: 'dark', label: 'Dark', icon: Moon, bg: '#000000', bar: '#2c2c2e', accent: '#bb86fc' },
-  { value: 'light', label: 'Light', icon: Sun, bg: '#f2f2f7', bar: '#d1d1d6', accent: '#6200ee' },
-  { value: 'system', label: 'System', icon: MonitorSmartphone, bg: 'linear-gradient(135deg, #000000 50%, #f2f2f7 50%)', bar: '#8e8e93', accent: '#9a5cf6' },
+  { value: 'dark', label: 'Dark', icon: Moon, bg: '#0a0a09', bar: '#33332e', accent: '#ff7a3d' },
+  { value: 'light', label: 'Light', icon: Sun, bg: '#dfdfdb', bar: '#bdbdb7', accent: '#b8400f' },
+  { value: 'system', label: 'System', icon: MonitorSmartphone, bg: 'linear-gradient(135deg, #0a0a09 50%, #dfdfdb 50%)', bar: '#a5a299', accent: '#ff7a3d' },
 ];
 
 export function DisplaySettings() {
@@ -80,7 +80,7 @@ export function DisplaySettings() {
           <div className="list-item">
             <div className="grow">
               <div className="bold">Liquid Glass</div>
-              <div className="small faint">Floating glass tab bar, buttons and sheets. Turn off for a classic, solid look.</div>
+              <div className="small faint">Floating, translucent tab bar, buttons and sheets. Off gives the solid, hairline look.</div>
             </div>
             <Toggle on={d.glass} onChange={(v) => d.set({ glass: v })} label="Liquid Glass" />
           </div>

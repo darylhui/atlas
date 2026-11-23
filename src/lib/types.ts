@@ -351,6 +351,28 @@ export interface Studio {
   address?: string;
   payPerClass?: number;
   capacity?: number;
+  notes?: string;
+}
+
+export type MachineCategory = 'treadmill' | 'elliptical' | 'bike' | 'row_climb' | 'strength' | 'cable' | 'rack' | 'bench' | 'pilates' | 'rehab' | 'other';
+
+/** A piece of equipment at a location (a Studio). */
+export interface Machine {
+  id: ID;
+  studioId: ID;
+  name: string;
+  brand?: string;
+  category: MachineCategory;
+  quantity: number;
+  status: 'ok' | 'out';
+  /** Seat settings, quirks, where it is. */
+  notes?: string;
+  exerciseIds?: ID[];
+  catalogId?: string;
+  imageUrl?: string;
+  sourceUrl?: string;
+  /** Set when a picture is saved on this device; changes when it is replaced. */
+  photoAt?: string;
 }
 
 export interface Attendee {
@@ -408,6 +430,7 @@ export interface AppData {
   packages: Package[];
   notes: Note[];
   studios: Studio[];
+  machines: Machine[];
   lessons: ClassLesson[];
   groupClasses: GroupClass[];
   settings: Settings;

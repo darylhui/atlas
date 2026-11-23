@@ -64,7 +64,7 @@ export default function Clients() {
                 {c.name}
               </div>
               <div className="small faint truncate">
-                {[idle == null ? 'No sessions yet' : idle === 0 ? 'Trained today' : `Last session ${idle}d ago`, left != null ? `${left} sessions left` : null]
+                {[idle == null ? 'No sessions yet' : idle === 0 ? 'Trained today' : idle === 1 ? 'Yesterday' : `${idle}d ago`, left != null ? `${left} left` : null]
                   .filter(Boolean)
                   .join(' · ')}
               </div>

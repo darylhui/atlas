@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClipboardList, MapPin, Plus, Trash2 } from 'lucide-react';
+import { removeLocation } from '../lib/machines';
 import { actions, useData, useStore } from '../lib/store';
 import type { ClassLesson, DayKey, GroupClass, ID, Studio } from '../lib/types';
 import { CATEGORY_META, PROGRAM_TYPES, classTitle, lessonSeconds, presentCount, programCategory, programColor } from '../lib/classes';
@@ -11,7 +12,7 @@ export function ProgramBadge({ type, size = 'sm' }: { type: string; size?: 'sm' 
   const cat = programCategory(type);
   return (
     <span className={`pill${size === 'lg' ? ' pill-lg' : ''}`}>
-      <span className="dot" style={{ background: programColor(type) }} />
+      <span className="dot" style={{ '--c': programColor(type) } as React.CSSProperties} />
       {type}
       {size === 'lg' && <span className="faint">· {CATEGORY_META[cat].label}</span>}
     </span>
@@ -29,19 +30,19 @@ export function ProgramTile({ type, size = 40 }: { type: string; size?: number }
     .slice(0, 2)
     .toUpperCase();
   return (
-    <span className="program-tile" style={{ width: size, height: size, fontSize: size * 0.34, background: programColor(type) }} aria-hidden>
+    <span className="program-tile" style={{ width: size, height: size, fontSize: size * 0.34, '--c': programColor(type) } as React.CSSProperties} aria-hidden>
       {letters || '•'}
     </span>
   );
 }
 
-export function ClassRow({ g, onClick, showDay }: { g: GroupClass; onClick: () => void; showDay?: string }) {
+export function ClassRow({ g, onClick, showDay, past }: { g: GroupClass; onClick: () => void; showDay?: string; past?: boolean }) {
   const lessons = useData((d) => d.lessons);
   const studio = useData((d) => d.studios.find((s) => s.id === g.studioId));
   const booked = g.attendees.length;
   const present = presentCount(g);
   return (
-    <button className="list-item" onClick={onClick} style={{ opacity: g.status === 'cancelled' ? 0.5 : 1 }}>
+    <button className={`list-item${past ? ' past' : ''}`} onClick={onClick} style={{ opacity: g.status === 'cancelled' ? 0.5 : 1 }}>
       <div className="timeline-time">
         {fmtTime(g.start)}
         {showDay && <div className="xs faint">{showDay}</div>}
@@ -300,7 +301,7 @@ export function StudiosSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
-function StudioEditor({ studio, onClose }: { studio: Studio; onClose: () => void }) {
+export function StudioEditor({ studio, onClose }: { studio: Studio; onClose: () => void }) {
   const exists = useStore((s) => s.data.studios.some((x) => x.id === studio.id));
   const currency = useStore((s) => s.data.settings.currency);
   const [s, setS] = useState(studio);
@@ -308,15 +309,15 @@ function StudioEditor({ studio, onClose }: { studio: Studio; onClose: () => void
     <Sheet
       open
       onClose={onClose}
-      title={exists ? 'Edit studio' : 'New studio'}
+      title={exists ? 'Edit location' : 'New location'}
       footer={
         <>
           {exists && (
             <Button
               variant="danger"
               onClick={async () => {
-                if (await confirmDialog({ title: `Remove ${s.name}?`, body: 'Classes at this studio stay in your history without a studio.', confirm: 'Remove', danger: true })) {
-                  actions().remove('studios', s.id);
+                if (await confirmDialog({ title: `Remove ${s.name}?`, body: 'Its machines and their pictures are removed too. Past classes stay in your history.', confirm: 'Remove', danger: true })) {
+                  await removeLocation(s.id);
                   onClose();
                 }
               }}
@@ -333,7 +334,7 @@ function StudioEditor({ studio, onClose }: { studio: Studio; onClose: () => void
               onClose();
             }}
           >
-            Save studio
+            Save location
           </Button>
         </>
       }
@@ -344,6 +345,9 @@ function StudioEditor({ studio, onClose }: { studio: Studio; onClose: () => void
         </Field>
         <Field label="Address">
           <TextInput value={s.address ?? ''} onChange={(e) => setS({ ...s, address: e.target.value || undefined })} />
+        </Field>
+        <Field label="Notes">
+          <TextInput value={s.notes ?? ''} onChange={(e) => setS({ ...s, notes: e.target.value || undefined })} placeholder="Access, parking, opening hours" />
         </Field>
         <div className="grid-2">
           <Field label="Class capacity">

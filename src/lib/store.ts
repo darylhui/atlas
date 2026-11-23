@@ -55,6 +55,7 @@ export function emptyData(): AppData {
     packages: [],
     notes: [],
     studios: [],
+    machines: [],
     lessons: [...EXAMPLE_LESSONS],
     groupClasses: [],
     settings: { ...DEFAULT_SETTINGS, ...(typeof navigator !== 'undefined' ? localeDefaults() : {}) },
