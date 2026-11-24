@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Download, Eye, Lock, MapPin, RotateCcw, Sparkles, TriangleAlert, Upload } from 'lucide-react';
-import { StudiosSheet } from '../components/classes';
+import { useNavigate } from 'react-router-dom';
+import { photoKey } from '../lib/machines';
 import { DisplaySettings } from '../components/DisplaySettings';
 import { actions, emptyData, useStore } from '../lib/store';
 import type { AppData, Units } from '../lib/types';
@@ -21,7 +22,7 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [pin, setPin] = useState(s.clientModePin ?? '');
   const [withPhotos, setWithPhotos] = useState(true);
-  const [studios, setStudios] = useState(false);
+  const nav = useNavigate();
 
   const exportBackup = async () => {
     const photos: Record<string, string> = {};
@@ -29,6 +30,10 @@ export default function SettingsPage() {
       for (const p of data.photos) {
         const v = await loadPhoto(p.id);
         if (v) photos[p.id] = v;
+      }
+      for (const m of data.machines) {
+        const v = m.photoAt ? await loadPhoto(photoKey(m.id)) : undefined;
+        if (v) photos[photoKey(m.id)] = v;
       }
     }
     downloadJson({ app: 'atlas', version: data.version, exportedAt: new Date().toISOString(), data, photos }, `atlas-backup-${today()}.json`);
@@ -99,16 +104,15 @@ export default function SettingsPage() {
         </div>
       </Section>
 
-      <Section title="Studios">
+      <Section title="Locations">
         <div className="card flush">
           <ListItem
             icon={<MapPin size={18} />}
-            title="Studios you coach at"
-            subtitle={data.studios.length ? data.studios.map((x) => x.name).join(' · ') : 'Add studios for class capacity and pay rates'}
-            onClick={() => setStudios(true)}
+            title="Locations & machines"
+            subtitle={data.studios.length ? data.studios.map((x) => x.name).join(' · ') : 'Gyms and studios you coach at, with their machines'}
+            onClick={() => nav('/locations')}
           />
         </div>
-        {studios && <StudiosSheet onClose={() => setStudios(false)} />}
       </Section>
 
       <Section title="Client view lock">
@@ -151,8 +155,8 @@ export default function SettingsPage() {
           <div className="card flush">
             <div className="list-item">
               <div className="grow">
-                <div className="bold">Include progress photos</div>
-                <div className="small faint">Larger file, but a complete backup</div>
+                <div className="bold">Include photos</div>
+                <div className="small faint">Progress and machine photos. Larger file, but a complete backup</div>
               </div>
               <Toggle on={withPhotos} onChange={setWithPhotos} label="Include photos in backup" />
             </div>

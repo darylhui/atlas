@@ -10,10 +10,10 @@ const out = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../publi
 // The mark is a circle held up by a square, on the 32-unit grid used by <Logo>.
 const mark = (pad) => `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" fill="#121212"/>
+  <rect width="512" height="512" fill="#0a0a09"/>
   <g transform="translate(${pad} ${pad}) scale(${(512 - pad * 2) / 32})">
-    <rect x="9" y="15" width="14" height="14" fill="#03dac6"/>
-    <circle cx="16" cy="9" r="6" fill="#bb86fc"/>
+    <rect x="9" y="15" width="14" height="14" fill="#ffc245"/>
+    <circle cx="16" cy="9" r="6" fill="#ff7a3d"/>
   </g>
 </svg>`;
 

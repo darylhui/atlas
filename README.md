@@ -20,9 +20,10 @@ Atlas is a dark-themed, mobile-first web app for personal trainers. It tracks cl
 | **Group classes** | For coaches who teach studio classes (e.g. BFT): a **lesson programme library** organised by block and week. Lessons are built from blocks: stations, circuits, EMOM, AMRAP, intervals, Tabata, partner YGIG, for-time and coach-led segments, with heart-rate zones, regressions and set-up notes. A full-screen **class timer** made for an iPad on the floor or mirrored to the studio TV shows the station board, beeps 3-2-1 and can give voice cues. There is also a studio timetable, attendance check-in, post-class notes and pay per studio. Classes that PT clients attend count toward their training load. |
 | **Business** | Session packages with automatic deduction, renewal and unpaid flags, revenue and sessions per month, and attendance rate. |
 | **Schedule** | Week strip with day agenda, recurring weekly bookings, no-show tracking, and calendar (.ics) invites. |
+| **Locations** | Gyms and studios with their machines: a 121-machine picture catalogue, your own photos, quantity, out-of-order status, set-up notes and linked exercises. |
 | **Tools** | 1RM calculator with % table, plate calculator, Tabata/EMOM interval timer, and an RPE ↔ RIR chart. |
 | **Data** | Local-first (IndexedDB). JSON backup and restore with photos, a demo studio, and kg/lb units. |
-| **Display** | Apple-style design with a Liquid Glass tab bar, sidebar, sheets and controls, or a classic solid style (Liquid Glass off). Dark, light or match-system appearance, five text sizes, bold text and reduce transparency, saved per device and applied before the first paint. |
+| **Display** | Cinematic dark (smoky glass, orange and amber) or soft stone light theme, with optional Liquid Glass bars and sheets. Dark, light or match-system appearance, five text sizes, bold text and reduce transparency, saved per device and applied before the first paint. |
 
 ![Group classes](docs/classes.png)
 

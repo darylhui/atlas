@@ -92,7 +92,7 @@ export default function Welcome() {
         <div className="stack" style={{ gap: 10 }}>
           {FEATURES.map((f) => (
             <div key={f.title} className="row" style={{ alignItems: 'flex-start' }}>
-              <div className="quick-icon" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
+              <div className="quick-icon" style={{ background: 'var(--accent-soft)', color: 'var(--accent-text)' }}>
                 <f.icon size={20} />
               </div>
               <div>

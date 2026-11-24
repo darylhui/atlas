@@ -145,7 +145,7 @@ export default function ClientMode() {
         {next && (
           <Card>
             <div className="row">
-              <CalendarDays size={20} color="var(--accent)" />
+              <CalendarDays size={20} color="var(--accent-text)" />
               <div className="grow">
                 <div className="bold">Next session</div>
                 <div className="small muted">

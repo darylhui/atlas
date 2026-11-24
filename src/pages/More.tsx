@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Banknote, Calculator, CalendarDays, ClipboardList, MonitorSmartphone, Settings, Share, Smartphone, Timer } from 'lucide-react';
+import { Banknote, Calculator, CalendarDays, ClipboardList, MapPin, MonitorSmartphone, Settings, Share, Smartphone, Timer } from 'lucide-react';
 import { useSettings } from '../lib/store';
 import { Logo } from '../components/Layout';
 import { ClientPicker } from '../components/sheets';
-import { Card, ListItem, Page, Sheet } from '../components/ui';
+import { Card, ListItem, Page, Section, Sheet } from '../components/ui';
 import { fs } from '../lib/display';
 
 export default function More() {
@@ -14,10 +14,9 @@ export default function More() {
   const [install, setInstall] = useState(false);
   const standalone = typeof window !== 'undefined' && (window.matchMedia?.('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone);
 
-  // iOS Settings-style tiles: a white glyph on a system color.
-  const icon = (I: typeof Settings, color: string) => (
-    <div className="icon-tile sm" style={{ background: color }}>
-      <I size={18} strokeWidth={2.2} aria-hidden />
+  const icon = (I: typeof Settings) => (
+    <div className="icon-tile sm">
+      <I size={19} aria-hidden />
     </div>
   );
 
@@ -34,16 +33,23 @@ export default function More() {
           </div>
         </div>
       </Card>
+      <Section title="Coaching">
       <div className="card flush">
-        <ListItem icon={icon(CalendarDays, '#ff3b30')} title="Schedule" subtitle="PT sessions and group classes by week" onClick={() => nav('/schedule')} />
-        <ListItem icon={icon(Timer, '#ff9500')} title="Classes" subtitle="Studio timetable, lesson programmes, class timer" onClick={() => nav('/classes')} />
-        <ListItem icon={icon(ClipboardList, '#007aff')} title="Library" subtitle="PT templates, class lessons & exercises" onClick={() => nav('/library')} />
-        <ListItem icon={icon(MonitorSmartphone, '#af52de')} title="Client view" subtitle="Hand your device to a client" onClick={() => setPick(true)} />
-        <ListItem icon={icon(Calculator, '#5856d6')} title="Coach tools" subtitle="1RM, plates, interval timer, RPE chart" onClick={() => nav('/tools')} />
-        <ListItem icon={icon(Banknote, '#34c759')} title="Business" subtitle="Revenue, renewals, attendance" onClick={() => nav('/business')} />
-        <ListItem icon={icon(Settings, '#8e8e93')} title="Settings & backup" subtitle="Display, text size, units, PIN, backup" onClick={() => nav('/settings')} />
-        {!standalone && !__SINGLE_FILE__ && <ListItem icon={icon(Smartphone, '#007aff')} title="Install on iPhone / iPad" subtitle="Full-screen app from your Home Screen" onClick={() => setInstall(true)} />}
+        <ListItem icon={icon(CalendarDays)} title="Schedule" subtitle="PT sessions and group classes by week" onClick={() => nav('/schedule')} />
+        <ListItem icon={icon(Timer)} title="Classes" subtitle="Studio timetable, lesson programmes, class timer" onClick={() => nav('/classes')} />
+        <ListItem icon={icon(ClipboardList)} title="Library" subtitle="PT templates, class lessons & exercises" onClick={() => nav('/library')} />
+        <ListItem icon={icon(MapPin)} title="Locations" subtitle="Gyms and their machines" onClick={() => nav('/locations')} />
+        <ListItem icon={icon(MonitorSmartphone)} title="Client view" subtitle="Hand your device to a client" onClick={() => setPick(true)} />
+        <ListItem icon={icon(Calculator)} title="Coach tools" subtitle="1RM, plates, interval timer, RPE chart" onClick={() => nav('/tools')} />
       </div>
+      </Section>
+      <Section title="Manage">
+      <div className="card flush">
+        <ListItem icon={icon(Banknote)} title="Business" subtitle="Revenue, renewals, attendance" onClick={() => nav('/business')} />
+        <ListItem icon={icon(Settings)} title="Settings & backup" subtitle="Display, text size, units, PIN, backup" onClick={() => nav('/settings')} />
+        {!standalone && !__SINGLE_FILE__ && <ListItem icon={icon(Smartphone)} title="Install on iPhone / iPad" subtitle="Full-screen app from your Home Screen" onClick={() => setInstall(true)} />}
+      </div>
+      </Section>
 
       <ClientPicker open={pick} onClose={() => setPick(false)} title="Open client view for…" onPick={(c) => nav(`/client-mode/${c.id}`)} />
       <Sheet open={install} onClose={() => setInstall(false)} title="Add Atlas to your Home Screen">

@@ -16,6 +16,8 @@ import Library from './pages/Library';
 import ExerciseDetail from './pages/ExerciseDetail';
 import TemplateEditor from './pages/TemplateEditor';
 import More from './pages/More';
+import Locations from './pages/Locations';
+import LocationDetail from './pages/LocationDetail';
 import Tools from './pages/Tools';
 import Business from './pages/Business';
 import SettingsPage from './pages/Settings';
@@ -90,6 +92,8 @@ export default function App() {
             <Route path="classes/lesson/:id/edit" element={<LessonEditor />} />
             <Route path="classes/session/:id" element={<ClassSession />} />
             <Route path="more" element={<More />} />
+            <Route path="locations" element={<Locations />} />
+            <Route path="locations/:id" element={<LocationDetail />} />
             <Route path="tools" element={<Tools />} />
             <Route path="business" element={<Business />} />
             <Route path="settings" element={<SettingsPage />} />

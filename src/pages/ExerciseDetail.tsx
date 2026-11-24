@@ -64,6 +64,18 @@ export default function ExerciseDetail() {
         )}
       </Card>
 
+      {data.machines.some((m) => m.exerciseIds?.includes(ex.id)) && (
+        <Section title="Where to do it">
+          <div className="card flush">
+            {data.machines
+              .filter((m) => m.exerciseIds?.includes(ex.id))
+              .map((m) => (
+                <ListItem key={m.id} title={m.name} subtitle={`${data.studios.find((s) => s.id === m.studioId)?.name ?? ''}${m.status === 'out' ? ' · out of order' : ''}`} onClick={() => nav(`/locations/${m.studioId}?machine=${m.id}`)} />
+              ))}
+          </div>
+        </Section>
+      )}
+
       {ex.tracking === 'weight_reps' && (
         <Section title="Client bests">
           <div className="card flush">

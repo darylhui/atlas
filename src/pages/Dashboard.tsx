@@ -1,16 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, CalendarDays, CircleAlert, Dumbbell, Settings as Cog, Timer, Trophy } from 'lucide-react';
+import { Activity, CalendarDays, CircleAlert, Plus, Search, Settings as Cog, Timer, Trophy, Wallet } from 'lucide-react';
 import { useStore } from '../lib/store';
 import type { Appointment } from '../lib/types';
-import { allAlerts, monthStart, revenueBetween } from '../lib/analytics/insights';
+import { allAlerts, type Alert } from '../lib/analytics/insights';
 import { latestCheckIn, readinessFor, readinessZone } from '../lib/analytics/recovery';
-import { completed, prTimeline } from '../lib/analytics/strength';
-import { addDays, dayKey, firstName, fmtDay, fmtNum, fmtWeight, mean, money, today, weekStart } from '../lib/util';
-import { AppointmentActions, AppointmentRow } from '../components/appointments';
+import { prTimeline } from '../lib/analytics/strength';
+import { addDays, dayKey, firstName, fmtDay, fmtTime, fmtNum, fmtWeight, today, weekStart } from '../lib/util';
+import { openSearch } from '../components/Layout';
+import { StartWorkoutSheet } from '../components/sheets';
+import { APPT_TYPE, AppointmentActions, AppointmentRow } from '../components/appointments';
 import { ClassRow } from '../components/classes';
-import { classPay, presentCount } from '../lib/classes';
-import { Avatar, Card, Empty, IconButton, Page, Section, Stat, ZonePill } from '../components/ui';
+import { TodayWidgets } from '../components/today';
+import { Avatar, Button, Card, Empty, IconButton, Page, Section, ZonePill } from '../components/ui';
 import { Sparkline } from '../components/charts';
 
 function greeting() {
@@ -18,11 +20,37 @@ function greeting() {
   return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
 }
 
+/** Where an alert's one-tap action goes. */
+const ALERT_ACTION: Record<Alert['kind'], { label: string; path: string }> = {
+  readiness: { label: 'Review', path: '?tab=recovery' },
+  load: { label: 'Review', path: '?tab=recovery' },
+  inactive: { label: 'Open', path: '' },
+  package: { label: 'Renew', path: '?tab=profile' },
+  payment: { label: 'Payment', path: '?tab=profile' },
+  checkin: { label: 'Check in', path: '/check-in' },
+  birthday: { label: 'Open', path: '' },
+  goal: { label: 'Goal', path: '?tab=goals' },
+};
+
+const endOf = (x: { start: string; durationMin: number }) => Date.parse(x.start) + x.durationMin * 60_000;
+
+/** Current time, refreshed each minute so "up next" and finished rows stay right. */
+function useNow() {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+  return now;
+}
+
 export default function Dashboard() {
   const data = useStore((s) => s.data);
   const nav = useNavigate();
   const [appt, setAppt] = useState<Appointment>();
   const [showAllAlerts, setShowAllAlerts] = useState(false);
+  const [start, setStart] = useState<string>();
+  const now = useNow();
   const t = today();
   const units = data.settings.units;
 
@@ -34,16 +62,21 @@ export default function Dashboard() {
       ].sort((x, y) => x.start.localeCompare(y.start)),
     [data.appointments, data.groupClasses, t],
   );
-  const weekClasses = data.groupClasses.filter((g) => g.status !== 'cancelled' && dayKey(new Date(g.start)) >= weekStart(t) && dayKey(new Date(g.start)) < addDays(weekStart(t), 7));
-  const coached = weekClasses.filter((g) => g.status === 'completed').reduce((a, g) => a + presentCount(g), 0);
+  // The session running now or coming up soonest (next 7 days), plus anything finished but still unmarked.
+  const next = useMemo(() => {
+    const horizon = now + 7 * 86_400_000;
+    return [
+      ...data.appointments.filter((a) => a.status === 'scheduled').map((a) => ({ kind: 'appt' as const, start: a.start, end: endOf(a), a })),
+      ...data.groupClasses.filter((g) => g.status === 'scheduled').map((g) => ({ kind: 'class' as const, start: g.start, end: endOf(g), g })),
+    ]
+      .filter((x) => x.end > now && Date.parse(x.start) < horizon)
+      .sort((x, y) => Date.parse(x.start) - Date.parse(y.start))[0];
+  }, [data.appointments, data.groupClasses, now]);
+  const toMark = todays.filter((x) => (x.kind === 'appt' ? x.a : x.g).status === 'scheduled' && endOf(x.kind === 'appt' ? x.a : x.g) <= now).length;
   const alerts = useMemo(() => allAlerts(data), [data]);
   const active = data.clients.filter((c) => c.status === 'active');
   const clientById = new Map(data.clients.map((c) => [c.id, c]));
 
-  const weekSessions = completed(data.sessions).filter((s) => s.date >= weekStart(t)).length;
-  const lastWeekSessions = completed(data.sessions).filter((s) => s.date >= addDays(weekStart(t), -7) && s.date < weekStart(t)).length;
-  const revenue = revenueBetween(data, monthStart(t), t);
-  const pay = classPay(data.groupClasses, data.studios, monthStart(t), t);
 
   const readinessBoard = useMemo(
     () =>
@@ -60,7 +93,6 @@ export default function Dashboard() {
         .sort((a, b) => (a.score ?? 101) - (b.score ?? 101)),
     [active, data.checkIns, t],
   );
-  const scored = readinessBoard.filter((r) => r.score != null).map((r) => r.score!);
 
   const recentPRs = useMemo(
     () =>
@@ -74,26 +106,115 @@ export default function Dashboard() {
 
   return (
     <Page
+      center
       title={`${greeting()}${data.settings.trainerName ? `, ${firstName(data.settings.trainerName.replace(/^coach\s+/i, ''))}` : ''}`}
-      subtitle={fmtDay(t, { weekday: true })}
+      eyebrow={fmtDay(t, { weekday: true })}
       actions={
+        <>
+        <IconButton label="Search" onClick={openSearch}>
+          <Search size={20} />
+        </IconButton>
         <IconButton label="Settings" onClick={() => nav('/settings')}>
           <Cog size={20} />
         </IconButton>
+        </>
       }
     >
-      <div className="grid-4">
-        <Stat label="PT sessions this week" icon={<Dumbbell size={14} />} value={weekSessions} delta={<span className="faint">{lastWeekSessions} last week</span>} />
-        <Stat label="Classes this week" icon={<Timer size={14} />} value={weekClasses.length} delta={<span className="faint">{coached} members coached so far</span>} />
-        <Stat label="Avg readiness" icon={<Activity size={14} />} value={scored.length ? Math.round(mean(scored)) : '–'} delta={<span className="faint">{scored.length} of {active.length} clients checked in</span>} />
-        <Stat
-          label="Income this month"
-          value={money(revenue + pay, data.settings.currency)}
-          delta={pay > 0 ? <span className="faint">{money(revenue, data.settings.currency)} PT · {money(pay, data.settings.currency)} classes</span> : undefined}
-        />
+      <button className="ask" onClick={openSearch}>
+        Find a client, lesson or exercise
+      </button>
+
+      {(next || toMark > 0) && (
+        <section className="hero" aria-label="Up next">
+          <div className="hero-main">
+            <div className="eyebrow">
+              {!next
+                ? 'Today'
+                : Date.parse(next.start) <= now
+                  ? 'Now'
+                  : `Up next · ${dayKey(new Date(next.start)) === t ? 'today' : dayKey(new Date(next.start)) === addDays(t, 1) ? 'tomorrow' : fmtDay(dayKey(new Date(next.start)), { weekday: true })}`}
+            </div>
+            <div className="hero-title">
+              {next ? `${fmtTime(next.start)} · ${next.kind === 'appt' ? (clientById.get(next.a.clientId)?.name ?? 'Client') : `${next.g.programType} class`}` : 'Nothing else booked this week'}
+            </div>
+            <div className="small muted mt-1">
+              {[
+                next && (next.kind === 'appt' ? `${APPT_TYPE[next.a.type].label} · ${next.a.durationMin} min` : `${next.g.attendees.length} booked · ${next.g.durationMin} min`),
+                toMark > 0 && `${toMark} finished today still to mark`,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </div>
+          </div>
+          {next && (
+            <div className="hero-actions">
+              {next.kind === 'class' ? (
+                <Button variant="primary" onClick={() => nav(`/classes/session/${next.g.id}`)}>
+                  Open class
+                </Button>
+              ) : (
+                <>
+                  {dayKey(new Date(next.start)) !== t ? null : next.a.type === 'check_in' ? (
+                    <Button variant="primary" onClick={() => nav(`/clients/${next.a.clientId}/check-in`)}>
+                      Check in
+                    </Button>
+                  ) : (
+                    <Button variant="primary" onClick={() => setStart(next.a.clientId)}>
+                      Start workout
+                    </Button>
+                  )}
+                  <Button onClick={() => setAppt(next.a)}>Details</Button>
+                </>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+      <div className="toolbar">
+        <button className="chip" onClick={() => nav('/schedule')}>
+          <CalendarDays size={16} aria-hidden /> {fmtDay(weekStart(t))} – {fmtDay(addDays(weekStart(t), 6))}
+        </button>
+        <button className="chip" onClick={() => nav('/schedule?new=1')}>
+          <Plus size={16} aria-hidden /> Book session
+        </button>
+        <button className="chip" onClick={() => nav('/classes')}>
+          <Timer size={16} aria-hidden /> Classes
+        </button>
+        <button className="chip" onClick={() => nav('/business')}>
+          <Wallet size={16} aria-hidden /> Business
+        </button>
       </div>
 
+      <TodayWidgets data={data} />
+
       <div className="cols">
+        <Section title="Needs attention" action={alerts.length > 5 ? <button className="section-link" onClick={() => setShowAllAlerts((v) => !v)}>{showAllAlerts ? 'Less' : `All ${alerts.length}`}</button> : undefined}>
+          <div className="card flush">
+            {(showAllAlerts ? alerts : alerts.slice(0, 5)).map((a) => {
+              const c = clientById.get(a.clientId)!;
+              return (
+                <button key={a.id} className="list-item" onClick={() => nav(`/clients/${c.id}${ALERT_ACTION[a.kind].path}`)}>
+                  <span className="status-bar" style={{ background: `var(--${a.severity})` }} aria-hidden />
+                  <div className="grow">
+                    <div className="row-title">
+                      <span className="bold">{firstName(c.name)}</span>
+                      <ZonePill zone={a.severity}>{a.title}</ZonePill>
+                    </div>
+                    <div className="small muted two-line mt-1">{a.detail}</div>
+                  </div>
+                  <span className="row-action">{ALERT_ACTION[a.kind].label}</span>
+                </button>
+              );
+            })}
+            {!alerts.length && (
+              <Empty icon={<CircleAlert />} title="All clear">
+                No flags across your clients right now.
+              </Empty>
+            )}
+          </div>
+        </Section>
+
         <Section
           title="Today’s schedule"
           action={
@@ -104,36 +225,11 @@ export default function Dashboard() {
         >
           <div className="card flush">
             {todays.map((x) =>
-              x.kind === 'appt' ? <AppointmentRow key={x.a.id} a={x.a} onClick={() => setAppt(x.a)} /> : <ClassRow key={x.g.id} g={x.g} onClick={() => nav(`/classes/session/${x.g.id}`)} />,
+              x.kind === 'appt' ? <AppointmentRow key={x.a.id} a={x.a} past={endOf(x.a) <= now} onClick={() => setAppt(x.a)} /> : <ClassRow key={x.g.id} g={x.g} past={endOf(x.g) <= now} onClick={() => nav(`/classes/session/${x.g.id}`)} />,
             )}
             {!todays.length && (
               <Empty icon={<CalendarDays />} title="Nothing booked today">
                 Tap + to book a session or start a workout.
-              </Empty>
-            )}
-          </div>
-        </Section>
-
-        <Section title="Needs attention" action={alerts.length > 5 ? <button className="section-link" onClick={() => setShowAllAlerts((v) => !v)}>{showAllAlerts ? 'Less' : `All ${alerts.length}`}</button> : undefined}>
-          <div className="card flush">
-            {(showAllAlerts ? alerts : alerts.slice(0, 5)).map((a) => {
-              const c = clientById.get(a.clientId)!;
-              return (
-                <button key={a.id} className="list-item" onClick={() => nav(`/clients/${c.id}`)} style={{ alignItems: 'flex-start' }}>
-                  <Avatar name={c.name} color={c.color} size={34} />
-                  <div className="grow">
-                    <div className="row" style={{ gap: 6 }}>
-                      <span className="bold truncate">{firstName(c.name)}</span>
-                      <ZonePill zone={a.severity}>{a.title}</ZonePill>
-                    </div>
-                    <div className="small faint mt-1">{a.detail}</div>
-                  </div>
-                </button>
-              );
-            })}
-            {!alerts.length && (
-              <Empty icon={<CircleAlert />} title="All clear">
-                No flags across your clients right now.
               </Empty>
             )}
           </div>
@@ -167,7 +263,7 @@ export default function Dashboard() {
               const c = data.clients.find((x) => x.id === data.sessions.find((s) => s.id === p.sessionId)?.clientId);
               return (
                 <button key={i} className="list-item" onClick={() => nav(`/sessions/${p.sessionId}`)}>
-                  <div className="quick-icon" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
+                  <div className="quick-icon" style={{ background: 'var(--accent-soft)', color: 'var(--accent-text)' }}>
                     <Trophy size={18} />
                   </div>
                   <div className="grow">
@@ -198,6 +294,7 @@ export default function Dashboard() {
         </Card>
       )}
 
+      {start && <StartWorkoutSheet open clientId={start} onClose={() => setStart(undefined)} />}
       <AppointmentActions appt={appt} onClose={() => setAppt(undefined)} />
     </Page>
   );

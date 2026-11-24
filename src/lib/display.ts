@@ -29,7 +29,7 @@ export const TEXT_SIZES = [
 ];
 
 const KEY = 'atlas.display';
-export const DEFAULTS: DisplayPrefs = { theme: 'dark', textScale: 1, boldText: false, reduceTransparency: false, glass: true };
+export const DEFAULTS: DisplayPrefs = { theme: 'dark', textScale: 1, boldText: false, reduceTransparency: false, glass: false };
 
 function load(): DisplayPrefs {
   try {
@@ -57,7 +57,7 @@ export function applyDisplay(p: DisplayPrefs) {
   if (p.glass) root.removeAttribute('data-glass');
   else root.setAttribute('data-glass', 'off');
   const meta = document.querySelector('meta[name="theme-color"]');
-  meta?.setAttribute('content', theme === 'light' ? '#f2f2f7' : '#000000');
+  meta?.setAttribute('content', theme === 'light' ? '#dfdfdb' : '#0a0a09');
 }
 
 interface DisplayState extends DisplayPrefs {
